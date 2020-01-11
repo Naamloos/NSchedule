@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     android:minWidth="25px"
     android:minHeight="25px"
-    android:gravity="center_vertical"
+    android:gravity="top"
     android:layout_width="match_parent"
     android:paddingLeft="50px"
     android:paddingRight="50px"
+    android:paddingTop="50px"
     >
     <EditText
         android:inputType="textEmailAddress"
@@ -23,10 +24,15 @@
         android:id="@+id/passwordfield"
         android:hint="password" />
     <CheckBox
-        android:text="Remember Me"
+        android:text="Remember Password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/rememberbox" />
+        android:id="@+id/rememberPassword" />
+    <CheckBox
+        android:text="Stay Logged In"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/stayLoggedIn" />
     <Button
         android:text="Login"
         android:layout_width="match_parent"
@@ -39,5 +45,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/disclaimer"
         android:typeface="sans" />
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/loginProgress" />
 
 </LinearLayout>

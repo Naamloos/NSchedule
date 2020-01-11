@@ -22,11 +22,8 @@ namespace NSchedule
         internal const string NHL_STENDEN_AUTH_ENDPOINT = "https://sa-nhlstenden.xedule.nl";
         internal const string STENDEN_AUTH_ENDPOINT = "https://sa-nhlstenden.xedule.nl/stenden";
         internal const string SURF_ENDPOINT = "https://engine.surfconext.nl:443/authentication/sp/consume-assertion";
-        internal const string ASSERTION_ENDPOINT = "https://sa-nhlstenden.xedule.nl/authentication/sso/assertionservice.aspx";
+        internal const string ASSERTION_ENDPOINT = "https://sso.xedule.nl/AssertionService.aspx";
         internal const string XEDULE_ENDPOINT = "https://sa-nhlstenden.xedule.nl";
-
-        internal const string SESSION_COOKIE_NAME = "ASP.NET_SessionId";
-        internal const string USER_COOKIE_NAME = "User";
 
         // Regexes
         // ha, haha, hahaha, there's two spaces after options lol. 

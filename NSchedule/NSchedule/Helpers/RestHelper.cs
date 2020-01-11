@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Android.App;
@@ -12,22 +13,19 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using NSchedule.Entities;
+using Xamarin.Essentials;
 
 // Many thanks to LuukEsselbrugge for making an old version of his SRooster code available on GitHub.
 // This saved a lot of time researching how xedule authentication and xedule's api works.
 namespace NSchedule.Helpers
 {
-    public class RestHelper
+    internal class RestHelper
     {
         private HttpClientHandler _handler;
         private HttpClient _http;
         private CookieContainer _cookies;
         private List<Cookie> _koekjes;
-
-        private bool _authenticated;
-
-        private string _sessionCookie = null;
-        private string _userCookie = null;
 
         public RestHelper()
         {
@@ -41,65 +39,40 @@ namespace NSchedule.Helpers
             _http = new HttpClient(_handler);
 
             _http.DefaultRequestHeaders.Add("User-Agent", Constants.USER_AGENT);
+            _http.DefaultRequestHeaders.Add("Accept", "*/*");
+            _http.DefaultRequestHeaders.Add("Connection", "keep-alive");
             _koekjes = new List<Cookie>();
         }
 
-        public void TryGetTheDocentenHaha()
+        public async Task<Schedule> GetScheduleAsync(int weekNumber, int year, int id, int schoolId)
         {
-            var resp = _http.GetAsync(Constants.API_ENDPOINT + "/docent").GetAwaiter().GetResult();
-            var content = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var response = await getNoRedirectAsync(Constants.API_ENDPOINT + $"/schedule?ids%5B0%5D={schoolId}_{year}_{weekNumber}_{id}");
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Verwerken content
+            var schedule = JsonSerializer.Deserialize<Schedule>(content);
+
+            return schedule;
         }
 
-        private async Task SetCookieHeader()
+        public async Task<bool> ReconnectSessionAsync()
         {
+            // This will check whether the saved session still works
+            // TODO
 
-        }
+            var usercookie = await SecureStorage.GetAsync("usercookie");
+            var sessioncookie = await SecureStorage.GetAsync("sessioncookie");
 
-        private async Task<HttpResponseMessage> getAsync(string url)
-        {
-            var uri = new Uri(url);
-            _http.DefaultRequestHeaders.Remove("Cookie");
-            _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
-            var resp = await _http.GetAsync(uri);
-
-            if ((int)resp.StatusCode >= 300 && (int)resp.StatusCode <= 399)
+            if(!string.IsNullOrEmpty(usercookie) && !string.IsNullOrEmpty(sessioncookie))
             {
-                var redirectUri = new Uri(uri.GetLeftPart(UriPartial.Authority) + resp.Headers.Location.OriginalString);
-                return await getAsync(redirectUri.ToString());
+                // Both are saved, now try to see whether these still work
+                // TODO.
             }
 
-            _koekjes.AddRange(_cookies.GetCookies(uri).Cast<Cookie>().ToList());
-            return resp;
+            return false;
         }
 
-        private async Task<HttpResponseMessage> postAsync(string url, FormUrlEncodedContent form)
-        {
-            var uri = new Uri(url);
-            _http.DefaultRequestHeaders.Remove("Cookie");
-            _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
-            var resp = await _http.PostAsync(uri, form);
-
-            var hh = resp.Headers.ToString();
-            var h = resp.RequestMessage.Headers.ToString();
-
-            _koekjes.AddRange(_cookies.GetCookies(uri).Cast<Cookie>().ToList());
-            return resp;
-        }
-
-        private string generateCookieString()
-        {
-            return string.Join("; ", _koekjes.Select(x => x.Name + "=" + x.Value));
-        }
-
-        private string scrapeText(string regexstring, string html)
-        {
-            var regex = new Regex(regexstring);
-            var matches = regex.Match(html);
-
-            return matches.Groups[1].Value;
-        }
-
-        public async Task<bool> authenticate(string username, string password)
+        public async Task<bool> Authenticate(string username, string password, bool remember)
         {
             // Determine login type.
             var loginpath = "";
@@ -118,34 +91,126 @@ namespace NSchedule.Helpers
 
             // Getting SAML paths
             var loginpage = await (await getAsync(loginpath)).Content.ReadAsStringAsync();
-            var samlpath = scrapeText(Constants.AUTH_REGEX, loginpage);
+            if(!scrapeText(Constants.AUTH_REGEX, loginpage, out string samlpath))
+            {
+                return false;
+            }
 
             // Trying to authenticate and get saml response
             var samlform = new Dictionary<string, string>();
             samlform.Add("UserName", username);
             samlform.Add("Password", password);
-            samlform.Add("Kmsi", "true");
             samlform.Add("AuthMethod", "FormsAuthentication");
             var samlpage = await (await postAsync(samlpath, new FormUrlEncodedContent(samlform))).Content.ReadAsStringAsync();
-            var samlresponse = scrapeText(Constants.SAML_RESPONSE_REGEX, samlpage);
+            if(!scrapeText(Constants.SAML_RESPONSE_REGEX, samlpage, out string samlresponse))
+            {
+                return false;
+            }
 
             // trying to get surf auth and relay state
             var surfform = new Dictionary<string, string>();
             surfform.Add("SAMLResponse", samlresponse);
             var surfresponse = await (await postAsync(Constants.SURF_ENDPOINT, new FormUrlEncodedContent(surfform))).Content.ReadAsStringAsync();
-            samlresponse = scrapeText(Constants.SAML_RESPONSE_REGEX, surfresponse);
-            var relaystate = scrapeText(Constants.RELAY_STATE_REGEX, surfresponse);
-            relaystate = relaystate.Replace("&amp", "&");
+
+            if(!scrapeText(Constants.SAML_RESPONSE_REGEX, surfresponse, out string samlresponse2) 
+                || !scrapeText(Constants.RELAY_STATE_REGEX, surfresponse, out string relaystate))
+            {
+                return false;
+            }
+            relaystate = relaystate.Replace("&amp;", "&");
 
             // Authenticating
             var assertform = new Dictionary<string, string>();
-            assertform.Add("SAMLResponse", samlresponse);
-            assertform.Add("return", "");
+            assertform.Add("SAMLResponse", samlresponse2);
             assertform.Add("RelayState", relaystate);
 
             var auth = await postAsync(Constants.ASSERTION_ENDPOINT, new FormUrlEncodedContent(assertform));
-            var authcontent = await auth.Content.ReadAsStringAsync();
-            var postcontent = await auth.RequestMessage.Content.ReadAsStringAsync();
+
+            if (remember)
+            {
+                await SecureStorage.SetAsync("usercookie", _koekjes.First(x => x.Name == "User").Value);
+                await SecureStorage.SetAsync("sessioncookie", _koekjes.First(x => x.Name == "ASP.NET_SessionId").Value);
+            }
+
+            return true;
+        }
+
+        private async Task<HttpResponseMessage> getNoRedirectAsync(string url)
+        {
+            var uri = new Uri(url);
+            _http.DefaultRequestHeaders.Remove("Cookie");
+            _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
+            var resp = await _http.GetAsync(uri);
+
+            updateCookies(_cookies.GetCookies(uri).Cast<Cookie>().ToList());
+            return resp;
+        }
+
+        private async Task<HttpResponseMessage> getAsync(string url)
+        {
+            var uri = new Uri(url);
+            _http.DefaultRequestHeaders.Remove("Cookie");
+            _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
+            var resp = await _http.GetAsync(uri);
+
+            if ((int)resp.StatusCode >= 300 && (int)resp.StatusCode <= 399)
+            {
+                var redirectUri = new Uri(uri.GetLeftPart(UriPartial.Authority) + resp.Headers.Location.OriginalString);
+                return await getAsync(redirectUri.ToString());
+            }
+
+            updateCookies(_cookies.GetCookies(uri).Cast<Cookie>().ToList());
+            return resp;
+        }
+
+        private async Task<HttpResponseMessage> postAsync(string url, FormUrlEncodedContent form, bool nocookies = false)
+        {
+            Console.WriteLine("POSTING");
+            var uri = new Uri(url);
+            _http.DefaultRequestHeaders.Remove("Cookie");
+            if (!nocookies)
+                _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
+            var resp = await _http.PostAsync(uri, form);
+
+            var hh = resp.Headers.ToString();
+            var content = await resp.Content.ReadAsStringAsync();
+            var h = resp.RequestMessage.Headers.ToString();
+
+            if ((int)resp.StatusCode >= 300 && (int)resp.StatusCode <= 399)
+            {
+                return await postAsync(resp.Headers.Location.ToString(), form, nocookies);
+            }
+
+            updateCookies(_cookies.GetCookies(uri).Cast<Cookie>().ToList());
+            Console.WriteLine("DONE POST");
+            return resp;
+        }
+
+        private void updateCookies(IEnumerable<Cookie> cookies)
+        {
+            foreach (var c in cookies)
+            {
+                _koekjes.RemoveAll(x => x.Name == c.Name);
+                _koekjes.Add(c);
+            }
+        }
+
+        private string generateCookieString()
+        {
+            return string.Join("; ", _koekjes.Select(x => x.Name + "=" + x.Value));
+        }
+
+        private bool scrapeText(string regexstring, string html, out string result)
+        {
+            var regex = new Regex(regexstring);
+            var matches = regex.Match(html);
+            result = "";
+
+            if (matches.Groups.Count < 2)
+            {
+                return false;
+            }
+            result = matches.Groups[1].Value;
 
             return true;
         }
