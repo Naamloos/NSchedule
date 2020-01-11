@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Android.App;
@@ -13,7 +13,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using NSchedule.Entities;
+using System.Json;
 using Xamarin.Essentials;
 
 // Many thanks to LuukEsselbrugge for making an old version of his SRooster code available on GitHub.
@@ -43,16 +43,15 @@ namespace NSchedule.Helpers
             _http.DefaultRequestHeaders.Add("Connection", "keep-alive");
             _koekjes = new List<Cookie>();
         }
-
-        public async Task<Schedule> GetScheduleAsync(int weekNumber, int year, int id, int schoolId)
+        public async Task<JsonValue> GetScheduleAsync(int schoolId, int year, int weekNumber, int user)
         {
-            var response = await getNoRedirectAsync(Constants.API_ENDPOINT + $"/schedule?ids%5B0%5D={schoolId}_{year}_{weekNumber}_{id}");
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await getNoRedirectAsync(Constants.API_ENDPOINT + $"/schedule?ids%5B0%5D={schoolId}_{year}_{weekNumber}_{user}");
+            var content = await response.Content.ReadAsStreamAsync();
 
             // Verwerken content
-            var schedule = JsonSerializer.Deserialize<Schedule>(content);
+            //var schedule = DeserializeStream(content);
 
-            return schedule;
+            return JsonValue.Load(content);
         }
 
         public async Task<bool> ReconnectSessionAsync()
