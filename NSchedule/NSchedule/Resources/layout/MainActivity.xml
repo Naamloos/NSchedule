@@ -28,18 +28,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/rememberPassword" />
-    <CheckBox
-        android:text="Stay Logged In"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/stayLoggedIn" />
     <Button
         android:text="Login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/loginbutton" />
     <TextView
-        android:text="NSchedule is in not officially endorsed by either NHL Stenden nor Xedule. Usage is at your own risk. This is also true for other unofficial schedule apps."
+        android:text="NSchedule is not officially endorsed by either NHL Stenden or Xedule. Usage is at your own risk. This is also true for other unofficial schedule apps."
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

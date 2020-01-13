@@ -13,8 +13,10 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using System.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xamarin.Essentials;
+using NSchedule.Entities;
 
 // Many thanks to LuukEsselbrugge for making an old version of his SRooster code available on GitHub.
 // This saved a lot of time researching how xedule authentication and xedule's api works.
@@ -43,35 +45,99 @@ namespace NSchedule.Helpers
             _http.DefaultRequestHeaders.Add("Connection", "keep-alive");
             _koekjes = new List<Cookie>();
         }
-        public async Task<JsonValue> GetScheduleAsync(int schoolId, int year, int weekNumber, int user)
+
+        // TODO ERRORS OPVANGEN LIKE A BITCH
+
+        public async Task<Calendar> GetCalendarAsync(int school, int weekNumber)
         {
-            var response = await getNoRedirectAsync(Constants.API_ENDPOINT + $"/schedule?ids%5B0%5D={schoolId}_{year}_{weekNumber}_{user}");
-            var content = await response.Content.ReadAsStreamAsync();
+            var response = await getAsync(Constants.API_ENDPOINT + $"/calendar/{school}_{weekNumber}");
+            var content = await response.Content.ReadAsStringAsync();
 
-            // Verwerken content
-            //var schedule = DeserializeStream(content);
+            return JsonConvert.DeserializeObject<Calendar>(content);
+        }
 
-            return JsonValue.Load(content);
+        public async Task<List<OrganisationalUnit>> GetOrganisationalUnitsAsync()
+        {
+            var response = await getAsync(Constants.API_ENDPOINT + $"/organisationalUnit");
+            var content = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<OrganisationalUnit>>(content);
+        }
+
+        public async Task<List<Year>> GetYearsAsync()
+        {
+            var response = await getAsync(Constants.API_ENDPOINT + $"/year");
+            var content = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<Year>>(content);
+        }
+
+        public async Task<List<Room>> GetRoomsAsync()
+        {
+            var response = await getAsync(Constants.API_ENDPOINT + $"/facility");
+            var content = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<Room>>(content);
+        }
+
+        public async Task<List<Teacher>> GetTeachersAsync()
+        {
+            var response = await getAsync(Constants.API_ENDPOINT + $"/docent");
+            var content = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<Teacher>>(content);
+        }
+
+        public async Task<List<Team>> GetTeamsAsync()
+        {
+            var response = await getAsync(Constants.API_ENDPOINT + $"/team");
+            var content = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<Team>>(content);
+        }
+
+        public async Task<List<Entities.Group>> GetGroupsAsync()
+        {
+            var response = await getAsync(Constants.API_ENDPOINT + $"/group");
+            var content = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<Entities.Group>>(content);
+        }
+
+        public async Task<Schedule> GetScheduleAsync(long schoolid, long year, long weeknum, long id)
+        {
+            var response = await getAsync(Constants.API_ENDPOINT + $"/schedule/?ids%5B0%5D={schoolid}_{year}_{weeknum}_{id}");
+            var content = await response.Content.ReadAsStringAsync();
+
+            var results = JsonConvert.DeserializeObject<List<Schedule>>(content);
+
+            return results.Count > 0? results[0] : null;
         }
 
         public async Task<bool> ReconnectSessionAsync()
         {
             // This will check whether the saved session still works
-            // TODO
+            var settings = await Settings.LoadAsync();
 
-            var usercookie = await SecureStorage.GetAsync("usercookie");
-            var sessioncookie = await SecureStorage.GetAsync("sessioncookie");
-
-            if(!string.IsNullOrEmpty(usercookie) && !string.IsNullOrEmpty(sessioncookie))
+            if(!string.IsNullOrEmpty(settings.UserCookie) && !string.IsNullOrEmpty(settings.SessionCookie))
             {
-                // Both are saved, now try to see whether these still work
-                // TODO.
+                // Omdat /team altijd leeg is abusen wij deze gewoon lekker om te kijken of onze cookies nog valid zijn.
+                var response = await getAsync(Constants.API_ENDPOINT + $"/team");
+
+                var forbidden = response.StatusCode == HttpStatusCode.Forbidden;
+                if (!forbidden)
+                {
+                    // YES! sessie nog valid. we stellen gewoon lekker deze koekjes weer in.
+                    this._koekjes.Add(new Cookie("ASP.NET_SessionId", settings.SessionCookie));
+                    this._koekjes.Add(new Cookie("User", settings.UserCookie));
+                    return true;
+                }
             }
 
             return false;
         }
 
-        public async Task<bool> Authenticate(string username, string password, bool remember)
+        public async Task<(bool Success, string Message)> Authenticate(string username, string password, bool remember)
         {
             // Determine login type.
             var loginpath = "";
@@ -85,14 +151,14 @@ namespace NSchedule.Helpers
             }
             else
             {
-                return false;
+                return (false, "You tried to log in with a non-stenden email address! This is not allowed.");
             }
 
             // Getting SAML paths
             var loginpage = await (await getAsync(loginpath)).Content.ReadAsStringAsync();
             if(!scrapeText(Constants.AUTH_REGEX, loginpage, out string samlpath))
             {
-                return false;
+                return (false, "Wait... something went wrong. Did NHL Stenden change their login?");
             }
 
             // Trying to authenticate and get saml response
@@ -103,7 +169,7 @@ namespace NSchedule.Helpers
             var samlpage = await (await postAsync(samlpath, new FormUrlEncodedContent(samlform))).Content.ReadAsStringAsync();
             if(!scrapeText(Constants.SAML_RESPONSE_REGEX, samlpage, out string samlresponse))
             {
-                return false;
+                return (false, "Invalid credentials!");
             }
 
             // trying to get surf auth and relay state
@@ -114,7 +180,7 @@ namespace NSchedule.Helpers
             if(!scrapeText(Constants.SAML_RESPONSE_REGEX, surfresponse, out string samlresponse2) 
                 || !scrapeText(Constants.RELAY_STATE_REGEX, surfresponse, out string relaystate))
             {
-                return false;
+                return (false, "Something went really really wrong behind the scenes!!1");
             }
             relaystate = relaystate.Replace("&amp;", "&");
 
@@ -125,31 +191,25 @@ namespace NSchedule.Helpers
 
             var auth = await postAsync(Constants.ASSERTION_ENDPOINT, new FormUrlEncodedContent(assertform));
 
-            if (remember)
-            {
-                await SecureStorage.SetAsync("usercookie", _koekjes.First(x => x.Name == "User").Value);
-                await SecureStorage.SetAsync("sessioncookie", _koekjes.First(x => x.Name == "ASP.NET_SessionId").Value);
-            }
+            //if (remember)
+            //{
+            //    var settings = await Settings.LoadAsync();
+            //    settings.UserCookie = _koekjes.First(x => x.Name == "User").Value;
+            //    settings.SessionCookie = _koekjes.First(x => x.Name == "ASP.NET_SessionId").Value;
+            //    await settings.SaveAsync();
+            //}
 
-            return true;
+            return (true, "Sign in successful!");
         }
 
-        private async Task<HttpResponseMessage> getNoRedirectAsync(string url)
+        private async Task<HttpResponseMessage> getAsync(string url,string cookieoverride = "")
         {
             var uri = new Uri(url);
             _http.DefaultRequestHeaders.Remove("Cookie");
-            _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
-            var resp = await _http.GetAsync(uri);
-
-            updateCookies(_cookies.GetCookies(uri).Cast<Cookie>().ToList());
-            return resp;
-        }
-
-        private async Task<HttpResponseMessage> getAsync(string url)
-        {
-            var uri = new Uri(url);
-            _http.DefaultRequestHeaders.Remove("Cookie");
-            _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
+            if(string.IsNullOrEmpty(cookieoverride))
+                _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
+            else
+                _http.DefaultRequestHeaders.Add("Cookie", cookieoverride);
             var resp = await _http.GetAsync(uri);
 
             if ((int)resp.StatusCode >= 300 && (int)resp.StatusCode <= 399)

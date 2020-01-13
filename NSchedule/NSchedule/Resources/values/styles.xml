@@ -3,14 +3,6 @@
   </style>
   
   <style name="AppTheme" parent="AppBaseTheme">
-    <item name="windowActionBar">false</item>
-    <item name="windowNoTitle">true</item>
-  </style>
-
-  <style name="DisplayLargeText">
-    <item name="android:textSize">30sp</item>
-    <item name="android:textStyle">bold</item>
-    <item name="android:textColor">#FFFFFF</item>
   </style>
 
 </resources>
