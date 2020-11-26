@@ -12,7 +12,7 @@
                 <ContentView Padding="0,40,0,40" VerticalOptions="FillAndExpand">
                     <Image Source="cal.png" VerticalOptions="Center" HeightRequest="64" />
                 </ContentView>
-                <Label Text="NRooster" HorizontalOptions="Center" InputTransparent="False" FontSize="Title" Padding="0,0,0,25" />
+                <Label Text="NSchedule" HorizontalOptions="Center" InputTransparent="False" FontSize="Title" Padding="0,0,0,25" />
                 <Label Text="Email" />
                 <Entry Text="{Binding Username, Mode=TwoWay}" FontSize="Medium" Placeholder="firstname.lastname@student.nhlstenden.com" Keyboard="Email" />
                 <Label Text="Password" />

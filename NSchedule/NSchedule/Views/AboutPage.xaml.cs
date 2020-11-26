@@ -1,5 +1,9 @@
-﻿using System;
+﻿using NSchedule.Helpers;
+using Plugin.Toast;
+using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
