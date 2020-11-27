@@ -13,6 +13,7 @@ using Xamarin.Essentials;
 using NSchedule.Entities;
 using System.Collections;
 using System.Reflection;
+using HtmlAgilityPack;
 
 // Many thanks to LuukEsselbrugge for making an old version of his SRooster code available on GitHub.
 // This saved a lot of time researching how xedule authentication and xedule's api works.
@@ -179,41 +180,30 @@ namespace NSchedule.Helpers
             }
 
             // Getting SAML paths
-            var loginpage = await (await getAsync(loginpath)).Content.ReadAsStringAsync();
-            if (!scrapeText(Constants.AUTH_REGEX, loginpage, out string samlpath))
+            var samlpath = await getSamlPathAsync(loginpath);
+            if (samlpath == null)
             {
                 return (false, "Wait... something went wrong. Did NHL Stenden change their login?");
             }
 
             // Trying to authenticate and get saml response
-            var samlform = new Dictionary<string, string>();
-            samlform.Add("UserName", username);
-            samlform.Add("Password", password);
-            samlform.Add("AuthMethod", "FormsAuthentication");
-            var samlpage = await (await postAsync(samlpath, new FormUrlEncodedContent(samlform))).Content.ReadAsStringAsync();
-            if (!scrapeText(Constants.SAML_RESPONSE_REGEX, samlpage, out string samlresponse))
+            var samlresponse = await getSamlResponseAsync(samlpath, username, password);
+            if (samlresponse == null)
             {
                 return (false, "Invalid credentials!");
             }
 
             // trying to get surf auth and relay state
-            var surfform = new Dictionary<string, string>();
-            surfform.Add("SAMLResponse", samlresponse);
-            var surfresponse = await (await postAsync(Constants.SURF_ENDPOINT, new FormUrlEncodedContent(surfform))).Content.ReadAsStringAsync();
 
-            if (!scrapeText(Constants.SAML_RESPONSE_REGEX, surfresponse, out string samlresponse2)
-                || !scrapeText(Constants.RELAY_STATE_REGEX, surfresponse, out string relaystate))
+            var surf = await getSurfAsync(samlresponse);
+            if (surf.samlresponse == null || surf.relaystate == null)
             {
                 return (false, "Something went really really wrong behind the scenes!");
             }
-            relaystate = relaystate.Replace("&amp;", "&");
+            surf.relaystate = surf.relaystate.Replace("&amp;", "&");
 
             // Authenticating
-            var assertform = new Dictionary<string, string>();
-            assertform.Add("SAMLResponse", samlresponse2);
-            assertform.Add("RelayState", relaystate);
-
-            await postAsync(Constants.ASSERTION_ENDPOINT, new FormUrlEncodedContent(assertform));
+            var auth = await authenticateAsync(surf.samlresponse, surf.relaystate);
 
             var settings = await _db.GetSettingsAsync();
             settings.CookieString = generateCookieString();
@@ -221,7 +211,60 @@ namespace NSchedule.Helpers
             settings.Password = password;
             await _db.SetSettingsAsync(settings);
 
-            return (true, "Sign in successful!");
+            if (auth)
+                return (true, "Sign in successful!");
+            else
+                return (false, "Oops, surf error??");
+        }
+
+        private async Task<bool> authenticateAsync(string samlresponse, string relaystate)
+        {
+            var assertform = new Dictionary<string, string>();
+            assertform.Add("SAMLResponse", samlresponse);
+            assertform.Add("RelayState", relaystate);
+
+            var resp = await postAsync(Constants.ASSERTION_ENDPOINT, new FormUrlEncodedContent(assertform));
+
+            return resp.StatusCode == HttpStatusCode.OK;
+        }
+
+        private async Task<(string samlresponse, string relaystate)> getSurfAsync(string samlresponse)
+        {
+            var surfform = new Dictionary<string, string>();
+            surfform.Add("SAMLResponse", samlresponse);
+
+            var surfresponse = await (await postAsync(Constants.SURF_ENDPOINT, new FormUrlEncodedContent(surfform))).Content.ReadAsStringAsync();
+            var surfdoc = new HtmlDocument();
+            surfdoc.LoadHtml(surfresponse);
+
+            var form = surfdoc.DocumentNode.SelectSingleNode("//body/div/form");
+            var samlresponse2 = form.ChildNodes[1].GetAttributeValue("value", null);
+            var relaystate = form.ChildNodes[3].GetAttributeValue("value", null);
+
+            return (samlresponse2, relaystate);
+        }
+
+        private async Task<string> getSamlPathAsync(string loginpath)
+        {
+            var loginpage = await (await getAsync(loginpath)).Content.ReadAsStringAsync();
+            var logindoc = new HtmlDocument();
+            logindoc.LoadHtml(loginpage);
+
+            return logindoc.GetElementbyId("options").GetAttributeValue<string>("action", null);
+        }
+
+        private async Task<string> getSamlResponseAsync(string samlpath, string username, string pass)
+        {
+            var samlform = new Dictionary<string, string>();
+            samlform.Add("UserName", username);
+            samlform.Add("Password", pass);
+            samlform.Add("AuthMethod", "FormsAuthentication");
+
+            var samlpage = await(await postAsync(samlpath, new FormUrlEncodedContent(samlform))).Content.ReadAsStringAsync();
+            var samldoc = new HtmlDocument();
+            samldoc.LoadHtml(samlpage);
+
+            return samldoc.DocumentNode.SelectSingleNode("//body/form/input").GetAttributeValue("value", null);
         }
 
         private async Task<HttpResponseMessage> getAsync(string url, string cookieoverride = "")
