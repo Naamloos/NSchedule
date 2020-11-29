@@ -12,7 +12,7 @@ namespace NSchedule.ViewModels
     {
         public AboutViewModel()
         {
-            Title = "About";
+            Title = "Welcome";
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://github.com/Naamloos/NSchedule"));
             SampleRequest = new Command(async () =>
             {

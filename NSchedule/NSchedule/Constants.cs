@@ -16,13 +16,6 @@ namespace NSchedule
         internal const string ASSERTION_ENDPOINT = "https://sso.xedule.nl/AssertionService.aspx";
         internal const string XEDULE_ENDPOINT = "https://sa-nhlstenden.xedule.nl";
 
-        // Regexes
-        // ha, haha, hahaha, there's two spaces after options lol. 
-        // I added a question mark after the second space just in case something changes and this is future proof (for a little bit)
-        internal const string AUTH_REGEX = "id=\"options\"  ?method=\"post\" action=\"(.*?)\"";
-        internal const string RELAY_STATE_REGEX = "name=\"RelayState\" value=\"(.*?)\"";
-        internal const string SAML_RESPONSE_REGEX = "name=\"SAMLResponse\" value=\"(.*?)\"";
-
         // Database constants
         public const string DatabaseFilename = "NSchedule.db3";
 

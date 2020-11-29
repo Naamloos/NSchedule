@@ -8,4 +8,10 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add" Command="{Binding AddItemCommand}" />
     </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <StackLayout>
+            
+        </StackLayout>
+    </ScrollView>
 </ContentPage>
