@@ -30,10 +30,10 @@ namespace NSchedule.Views
             _viewModel.OnAppearing();
         }
 
-        private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
-            CrossToastPopUp.Current.ShowToastMessage($"Tapped {((Scheduleable)(this.SelectedSchedules.SelectedItem))?.Code ?? "nothing?"}.");
-            this.SelectedSchedules.SelectedItem = null;
+            var s = (View)sender;
+            s.BackgroundColor = Color.Red;
         }
     }
 }

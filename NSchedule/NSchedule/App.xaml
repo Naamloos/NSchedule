@@ -21,6 +21,10 @@
                 <Setter Property="BackgroundColor" Value="{StaticResource Backgrounds}"/>
             </Style>
 
+            <Style TargetType="ListView">
+                <Setter Property="RefreshControlColor" Value="Orange"/>
+            </Style>
+
             <Style TargetType="Button">
                 <Setter Property="TextColor" Value="White"></Setter>
                 <Setter Property="VisualStateManager.VisualStateGroups">

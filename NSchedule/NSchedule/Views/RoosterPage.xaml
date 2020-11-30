@@ -8,9 +8,30 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add" Command="{Binding AddItemCommand}" />
     </ContentPage.ToolbarItems>
-
+    
     <ScrollView>
-        <ListView x:Name="SelectedSchedules" ItemsSource="{Binding Schedules}" ItemSelected="ListView_ItemSelected">
-        </ListView>
+        <StackLayout>
+            <Label Text="Tap once to open, Tap twice to remove." Margin="10" HorizontalOptions="Center"/>
+            <ListView x:Name="SelectedSchedules" ItemsSource="{Binding Schedules}" Margin="15, 5">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="{Binding Code}" VerticalOptions="Center" HorizontalOptions="StartAndExpand">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.OpenSchedule, Source={x:Reference Name=ViewRoosterPage}}}"
+                                                      CommandParameter="{Binding Code}"
+                                                          NumberOfTapsRequired="1"/>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.RemoveFromListCommand, Source={x:Reference Name=ViewRoosterPage}}}"
+                                                      CommandParameter="{Binding Code}"
+                                                          NumberOfTapsRequired="2"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
     </ScrollView>
 </ContentPage>

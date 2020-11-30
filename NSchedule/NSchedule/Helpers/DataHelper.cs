@@ -77,7 +77,7 @@ namespace NSchedule.Helpers
         public async Task RemoveTrackedSchedule(string code)
         {
             await this._db.RemoveScheduleAsync(code);
-            this.Tracked.Add(this.Schedulables.First(x => x.Code == code));
+            this.Tracked.Remove(this.Schedulables.First(x => x.Code == code));
         }
     }
 }
