@@ -10,8 +10,7 @@
     </ContentPage.ToolbarItems>
 
     <ScrollView>
-        <StackLayout>
-            
-        </StackLayout>
+        <ListView x:Name="SelectedSchedules" ItemsSource="{Binding Schedules}" ItemSelected="ListView_ItemSelected">
+        </ListView>
     </ScrollView>
 </ContentPage>

@@ -31,8 +31,35 @@ namespace NSchedule.Helpers
                 {
                     await InternalDatabase.CreateTablesAsync(CreateFlags.None, typeof(Settings)).ConfigureAwait(false);
                 }
+                if (!InternalDatabase.TableMappings.Any(m => m.MappedType.Name == typeof(DatabaseScheduleable).Name))
+                {
+                    await InternalDatabase.CreateTablesAsync(CreateFlags.None, typeof(DatabaseScheduleable)).ConfigureAwait(false);
+                }
                 initialized = true;
             }
+        }
+
+        public async Task AddScheduleAsync(string code)
+        {
+            if(await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() < 1)
+            {
+                await InternalDatabase.InsertAsync(new DatabaseScheduleable() { Code = code });
+            }
+        }
+
+        public async Task RemoveScheduleAsync(string code)
+        {
+            if (await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() > 0)
+            {
+                var rem = await InternalDatabase.Table<DatabaseScheduleable>().DeleteAsync(x => x.Code == code);
+            }
+        }
+
+        public async Task<List<string>> GetSchedulesAsync()
+        {
+            var list = new List<string>();
+            list.AddRange((await InternalDatabase.Table<DatabaseScheduleable>().Where(x => true).ToListAsync()).Select(x => x.Code));
+            return list;
         }
 
         public async Task<Settings> GetSettingsAsync()

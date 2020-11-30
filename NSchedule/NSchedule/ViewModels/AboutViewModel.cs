@@ -14,7 +14,7 @@ namespace NSchedule.ViewModels
         {
             Title = "Welcome";
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://github.com/Naamloos/NSchedule"));
-            SampleRequest = new Command(async () =>
+            ReloadData = new Command(async () =>
             {
                 await this.Data.PreloadDataAsync();
                 CrossToastPopUp.Current.ShowToastMessage($"Done refreshing cache.", Plugin.Toast.Abstractions.ToastLength.Long);
@@ -23,6 +23,6 @@ namespace NSchedule.ViewModels
 
         public ICommand OpenWebCommand { get; }
 
-        public ICommand SampleRequest { get; }
+        public ICommand ReloadData { get; }
     }
 }

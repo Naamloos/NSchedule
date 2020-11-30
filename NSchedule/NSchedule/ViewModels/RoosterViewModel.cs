@@ -1,4 +1,5 @@
-﻿using NSchedule.Popups;
+﻿using NSchedule.Entities;
+using NSchedule.Popups;
 using NSchedule.Views;
 using Plugin.Toast;
 using System;
@@ -13,6 +14,8 @@ namespace NSchedule.ViewModels
     public class RoosterViewModel : BaseViewModel
     {
         public Command AddItemCommand { get; }
+        public ObservableCollection<Scheduleable> Schedules { get { return this.Data.Tracked; } set { } }
+
         public RoosterViewModel()
         {
             Title = "Schedules";

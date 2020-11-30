@@ -36,7 +36,7 @@
                         BackgroundColor="{StaticResource Primary}"
                         TextColor="White" />
                 <Button Margin="0,30,0,0" Text="Sample Request"
-                        Command="{Binding SampleRequest}"
+                        Command="{Binding ReloadData}"
                         BackgroundColor="{StaticResource Primary}"
                         TextColor="White" />
             </StackLayout>
