@@ -1,4 +1,6 @@
-﻿using NSchedule.Helpers;
+﻿using NSchedule.Entities;
+using NSchedule.Helpers;
+using NSchedule.ViewModels;
 using Plugin.Toast;
 using System;
 using System.ComponentModel;
@@ -11,9 +13,11 @@ namespace NSchedule.Views
 {
     public partial class ScheduleViewPage : ContentPage
     {
-        public ScheduleViewPage()
+        public ScheduleViewPage(Scheduleable s)
         {
             InitializeComponent();
+            var binding = (ScheduleViewViewModel)this.BindingContext;
+            binding.Scheduleable = s;
         }
     }
 }

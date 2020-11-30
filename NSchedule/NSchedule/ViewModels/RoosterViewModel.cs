@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -36,7 +37,7 @@ namespace NSchedule.ViewModels
         {
             CrossToastPopUp.Current.ShowToastMessage($"Selected {s}.");
             Shell.Current.GetCurrentPage().FindByName<ListView>("SelectedSchedules").SelectedItem = null;
-            await Shell.Current.GetCurrentPage().Navigation.PushAsync(new ScheduleViewPage());
+            await Shell.Current.GetCurrentPage().Navigation.PushAsync(new ScheduleViewPage(Data.Schedulables.First(x => x.Code == s)));
         }
 
         private async Task RemoveFromListAsync(string item)

@@ -22,7 +22,35 @@
             VerticalOptions="FillAndExpand"
             HorizontalOptions="FillAndExpand"
             Year="{Binding CurrentYear}"
-            Month="{Binding CurrentMonth}">
+            Month="{Binding CurrentMonth}" 
+            AnimateCalendar="True"
+            x:Name="Schedule"
+            Margin="15"
+            DayTappedCommand="{Binding DayTapped}"
+            Events="{Binding Events}"
+            DaysTitleMaximumLength="ThreeChars">
+            <controls:Calendar.EmptyTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <Label Text="No classes today." HorizontalTextAlignment="Center" Margin="0,5,0,5" />
+                    </StackLayout>
+                </DataTemplate>
+            </controls:Calendar.EmptyTemplate>
+            <controls:Calendar.EventTemplate>
+                <DataTemplate>
+                    <StackLayout
+                        Padding="15,0,0,0">
+                        <Label
+                            Text="{Binding Name}"
+                            FontAttributes="Bold"
+                            FontSize="Medium" />
+                        <Label
+                            Text="{Binding Description}"
+                            FontSize="Small"
+                            LineBreakMode="WordWrap" />
+                    </StackLayout>
+                </DataTemplate>
+            </controls:Calendar.EventTemplate>
         </controls:Calendar>
     </StackLayout>
 
