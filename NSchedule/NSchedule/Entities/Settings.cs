@@ -24,5 +24,8 @@ namespace NSchedule.Entities
 
         [Column("pass")]
         public string Password { get; set; } = "";
+
+        [Column("locale")]
+        public string Locale { get; set; } = "en";
     }
 }

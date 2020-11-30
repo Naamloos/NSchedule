@@ -18,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\ComparePage.xaml.cs">
+      <DependentUpon>ComparePage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ScheduleViewPage.xaml.cs">
       <DependentUpon>ScheduleViewPage.xaml</DependentUpon>
     </Compile>

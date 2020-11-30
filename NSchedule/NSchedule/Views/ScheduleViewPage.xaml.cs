@@ -13,11 +13,12 @@ namespace NSchedule.Views
 {
     public partial class ScheduleViewPage : ContentPage
     {
-        public ScheduleViewPage(Scheduleable s)
+        public ScheduleViewPage(params Scheduleable[] s)
         {
             InitializeComponent();
             var binding = (ScheduleViewViewModel)this.BindingContext;
-            binding.Scheduleable = s;
+            binding.ForSchedules(s);
+            binding.LoadNewDayAsync(DateTime.Now).SafeFireAndForget(false);
         }
     }
 }

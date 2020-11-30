@@ -10,5 +10,8 @@ namespace NSchedule.Entities
         [PrimaryKey]
         [Column("code")]
         public string Code { get; set; }
+
+        [Column("color")]
+        public string Color { get; set; } = "#00FF00";
     }
 }

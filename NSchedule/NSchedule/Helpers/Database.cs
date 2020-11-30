@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace NSchedule.Helpers
 {
@@ -43,7 +44,21 @@ namespace NSchedule.Helpers
         {
             if(await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() < 1)
             {
-                await InternalDatabase.InsertAsync(new DatabaseScheduleable() { Code = code });
+                var c = Color.Default.Random();
+                await InternalDatabase.InsertAsync(new DatabaseScheduleable() { Code = code, Color = c.ToHex() });
+            }
+        }
+
+        public async Task<Color> GetColorForCodeAsync(string code)
+        {
+            if (await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() > 0)
+            {
+                var s = await InternalDatabase.Table<DatabaseScheduleable>().FirstAsync(x => x.Code == code);
+                return Color.FromHex(s.Color);
+            }
+            else
+            {
+                return Color.Default.Random();
             }
         }
 

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NSchedule.Views.ComparePage"
+             Title="{Binding Title}"
+             x:Name="ViewRoosterPage">
+    <StackLayout>
+        <ScrollView>
+            <StackLayout>
+                <ListView x:Name="SelectedSchedules" ItemsSource="{Binding Schedules}" Margin="15, 5" >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout Orientation="Horizontal">
+                                    <Switch IsToggled="{Binding Selected}" />
+                                    <Label Text="{Binding Code}" VerticalOptions="Center" HorizontalOptions="StartAndExpand"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </ScrollView>
+        <Button Text="Compare" Command="{Binding Compare}"/>
+    </StackLayout>
+    
+</ContentPage>

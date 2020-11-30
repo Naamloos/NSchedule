@@ -4,18 +4,11 @@
              x:Class="NSchedule.Views.ScheduleViewPage"
              xmlns:vm="clr-namespace:NSchedule.ViewModels"
              xmlns:controls="clr-namespace:Xamarin.Plugin.Calendar.Controls;assembly=Xamarin.Plugin.Calendar"
-             Title="{Binding Title}"
-             Shell.NavBarIsVisible="False">
+             Title="{Binding Title}" NavigationPage.HasNavigationBar="True">
 
     <ContentPage.BindingContext>
         <vm:ScheduleViewViewModel />
     </ContentPage.BindingContext>
-
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <Color x:Key="Accent">#96d1ff</Color>
-        </ResourceDictionary>
-    </ContentPage.Resources>
 
     <StackLayout>
         <controls:Calendar
@@ -25,10 +18,12 @@
             Month="{Binding CurrentMonth}" 
             AnimateCalendar="True"
             x:Name="Schedule"
-            Margin="15"
+            Margin="15,0"
             DayTappedCommand="{Binding DayTapped}"
             Events="{Binding Events}"
-            DaysTitleMaximumLength="ThreeChars">
+            DaysTitleMaximumLength="ThreeChars"
+            EventIndicatorColor="Transparent"
+            ArrowsColor="#000000">
             <controls:Calendar.EmptyTemplate>
                 <DataTemplate>
                     <StackLayout>
@@ -38,16 +33,31 @@
             </controls:Calendar.EmptyTemplate>
             <controls:Calendar.EventTemplate>
                 <DataTemplate>
-                    <StackLayout
-                        Padding="15,0,0,0">
-                        <Label
-                            Text="{Binding Name}"
-                            FontAttributes="Bold"
-                            FontSize="Medium" />
-                        <Label
-                            Text="{Binding Description}"
-                            FontSize="Small"
-                            LineBreakMode="WordWrap" />
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                        <BoxView HorizontalOptions="Start" WidthRequest="5" VerticalOptions="Fill" BackgroundColor="{Binding ScheduleColor}"/>
+                        <StackLayout
+                            HorizontalOptions="FillAndExpand"
+                            Padding="15,0,0,0">
+                            <Label
+                                Text="{Binding Name}"
+                                FontAttributes="Bold"
+                                FontSize="Medium" />
+                            <Label 
+                                Text="{Binding Rooms}"
+                                FontSize="Micro"
+                                FontAttributes="Italic" 
+                                LineBreakMode="TailTruncation"/>
+                            <Label 
+                                Text="{Binding Attendees}"
+                                FontSize="Micro"
+                                FontAttributes="Italic" 
+                                LineBreakMode="TailTruncation"/>
+                            <Label
+                                Text="{Binding Description}"
+                                FontSize="Small"
+                                LineBreakMode="WordWrap" />
+                            <ProgressBar Progress="{Binding Progress}" ProgressColor="{Binding ScheduleColor}" HorizontalOptions="Fill"/>
+                        </StackLayout>
                     </StackLayout>
                 </DataTemplate>
             </controls:Calendar.EventTemplate>

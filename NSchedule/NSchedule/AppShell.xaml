@@ -4,7 +4,8 @@
        xmlns:local="clr-namespace:NSchedule.Views"
        Title="NSchedule"
        x:Class="NSchedule.AppShell"
-       FlyoutBackgroundColor="{StaticResource Backgrounds}">
+       FlyoutBackgroundColor="{StaticResource Backgrounds}"
+       >
 
     <!--
         The overall app visual hierarchy is defined here, along with navigation.
@@ -86,12 +87,15 @@
     <FlyoutItem Title="Welcome" Icon="icon_about.png">
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Rooster" Icon="icon_feed.png">
+    <FlyoutItem Title="Schedule" Icon="icon_feed.png">
         <ShellContent Route="RoosterPage" ContentTemplate="{DataTemplate local:RoosterPage}" />
+    </FlyoutItem>
+    <FlyoutItem Title="Compare" Icon="icon_feed.png">
+        <ShellContent Route="ComparePage" ContentTemplate="{DataTemplate local:ComparePage}" />
     </FlyoutItem>
 
     <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
-    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
+    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked" IsDestructive="True">
     </MenuItem>
 
     <!--
