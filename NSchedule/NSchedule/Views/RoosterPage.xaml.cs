@@ -32,7 +32,7 @@ namespace NSchedule.Views
 
         private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            CrossToastPopUp.Current.ShowToastMessage($"Tapped {((Scheduleable)(e.SelectedItem)).Code}.");
+            CrossToastPopUp.Current.ShowToastMessage($"Tapped {((Scheduleable)(this.SelectedSchedules.SelectedItem))?.Code ?? "nothing?"}.");
             this.SelectedSchedules.SelectedItem = null;
         }
     }
