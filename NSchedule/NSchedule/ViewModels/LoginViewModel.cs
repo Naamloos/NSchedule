@@ -14,6 +14,7 @@ namespace NSchedule.ViewModels
         public Command LoginCommand { get; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public bool Waiting { get; set; } = true;
 
         public LoginViewModel()
         {
@@ -23,10 +24,12 @@ namespace NSchedule.ViewModels
         private async Task OnLoginClicked(object obj)
         {
             Shell.Current.GetCurrentPage().FindByName<Button>("login").IsVisible = false;
+            Waiting = true;
             CrossToastPopUp.Current.ShowToastMessage("Attempting login...");
-            if(Username is null || Password is null)
+            if (Username is null || Password is null)
             {
                 Shell.Current.GetCurrentPage().FindByName<Button>("login").IsVisible = true;
+                Waiting = false;
                 CrossToastPopUp.Current.ShowToastMessage("Please enter both Username and Password.");
                 return;
             }
@@ -42,6 +45,7 @@ namespace NSchedule.ViewModels
             else
             {
                 Shell.Current.GetCurrentPage().FindByName<Button>("login").IsVisible = true;
+                Waiting = false;
             }
         }
     }

@@ -42,6 +42,8 @@ namespace NSchedule
                 // enable buttons n shit
                 var btn = Shell.Current.GetCurrentPage().FindByName<Button>("login");
                 btn.IsVisible = true;
+                var spinner = Shell.Current.GetCurrentPage().FindByName<ActivityIndicator>("spinner");
+                spinner.IsRunning = false;
             }
         }
 
