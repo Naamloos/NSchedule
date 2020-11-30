@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace NSchedule.Entities
 {
-    public class Teacher
+    public class Teacher : Scheduleable
     {
         [JsonProperty("attTLs")]
         public List<long> AttTLs { get; set; }
@@ -17,16 +17,7 @@ namespace NSchedule.Entities
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("orus")]
-        public List<long> Locations { get; set; }
-
         [JsonProperty("tsss", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> Tsss { get; set; }
-
-        [JsonProperty("code")]
-        public string Code { get; set; }
-
-        [JsonProperty("id")]
-        public long Id { get; set; }
     }
 }

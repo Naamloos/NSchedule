@@ -15,20 +15,25 @@ namespace NSchedule
             InitializeComponent();
 
             var db = new Database();
+            var rest = new RestHelper(db);
+            var data = new DataHelper(rest, db);
             DependencyService.RegisterSingleton(db);
-            DependencyService.RegisterSingleton(new RestHelper(db));
+            DependencyService.RegisterSingleton(rest);
+            DependencyService.RegisterSingleton(data);
+
             MainPage = new AppShell();
             Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
         }
 
         protected override async void OnStart()
         {
-            CrossToastPopUp.Current.ShowToastMessage("One moment...");
+            CrossToastPopUp.Current.ShowToastMessage("One moment, trying to re-authenticate...");
             var reauth = await DependencyService.Get<RestHelper>().CheckAndReconnectSessionAsync();
             if (reauth.Success)
             {
                 CrossToastPopUp.Current.ShowToastMessage(reauth.Message);
                 await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
+                await DependencyService.Get<DataHelper>().PreloadDataAsync();
             }
             else
             {

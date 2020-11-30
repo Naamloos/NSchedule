@@ -11,6 +11,7 @@ namespace NSchedule.ViewModels
     {
         internal Database Database => DependencyService.Get<Database>(DependencyFetchTarget.GlobalInstance);
         internal RestHelper Rest => DependencyService.Get<RestHelper>(DependencyFetchTarget.GlobalInstance);
+        internal DataHelper Data => DependencyService.Get<DataHelper>(DependencyFetchTarget.GlobalInstance);
 
         bool isBusy = false;
         public bool IsBusy

@@ -37,6 +37,7 @@ namespace NSchedule.ViewModels
             if (auth.Success)
             {
                 await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
+                await this.Data.PreloadDataAsync();
             }
             else
             {

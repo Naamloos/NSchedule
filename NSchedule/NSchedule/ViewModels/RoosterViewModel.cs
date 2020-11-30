@@ -1,6 +1,8 @@
-﻿using NSchedule.Views;
+﻿using NSchedule.Popups;
+using NSchedule.Views;
 using Plugin.Toast;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -13,7 +15,7 @@ namespace NSchedule.ViewModels
         public Command AddItemCommand { get; }
         public RoosterViewModel()
         {
-            Title = "Roosters";
+            Title = "Schedules";
             this.AddItemCommand = new Command(async e => await ViewAddDialog(e));
         }
 
@@ -24,8 +26,12 @@ namespace NSchedule.ViewModels
 
         private async Task ViewAddDialog(object e)
         {
+
             CrossToastPopUp.Current.ShowToastMessage("Add dialog works.");
-            await Task.Yield();
+
+            var pop = new ScheduleSelect();
+
+            await Rg.Plugins.Popup.Services.PopupNavigation.Instance.PushAsync(pop);
         }
     }
 }

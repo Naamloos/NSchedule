@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Newtonsoft.Json;
+using SQLite;
 
 namespace NSchedule.Entities
 {
@@ -52,6 +53,7 @@ namespace NSchedule.Entities
         [JsonProperty("lastDayOfWeek")]
         public long LastDayOfWeek { get; set; }
 
+        [PrimaryKey]
         [JsonProperty("id")]
         public string Id { get; set; }
     }

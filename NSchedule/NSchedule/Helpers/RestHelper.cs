@@ -285,23 +285,6 @@ namespace NSchedule.Helpers
             return results.Count > 0 ? results[0] : null;
         }
 
-        public async Task PreloadDataAsync()
-        {
-            // TODO preload data
-            /*
-             
-            Preload (update) following endpoints:
-
-            org units
-            year
-            facility
-            team
-            group
-            docent
-             
-             */
-        }
-
         /// <summary>
         /// Authenticates with SAML response and relay state.
         /// </summary>
