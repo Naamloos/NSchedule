@@ -1,4 +1,5 @@
-﻿using NSchedule.ViewModels;
+﻿using NSchedule.Entities;
+using NSchedule.ViewModels;
 using NSchedule.Views;
 using Plugin.Toast;
 using System;
@@ -31,7 +32,7 @@ namespace NSchedule.Views
 
         private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            CrossToastPopUp.Current.ShowToastMessage($"Tapped {e.SelectedItem}.");
+            CrossToastPopUp.Current.ShowToastMessage($"Tapped {((Scheduleable)(e.SelectedItem)).Code}.");
             this.SelectedSchedules.SelectedItem = null;
         }
     }
