@@ -8,12 +8,17 @@ namespace NSchedule.Entities
     public class CalendarEvent
     {
         public string Name { get; set; }
-        public string Description { get; set; }
+        public string Times { get; set; }
         public string Rooms { get; set; }
         public string Attendees { get; set; }
         public DateTimeOffset Start { get; set; }
         public DateTimeOffset End { get; set; }
         public Color ScheduleColor { get; set; }
         public float Progress { get; set; }
+        public Color Urgent { get; set; } = Color.Transparent;
+        public Guid Guid { get; set; } = Guid.NewGuid();
+        public Appointment Appointment { get; set; }
+        public Command InfoCommand { get; set; }
+        public string ScheduleableCode { get; set; }
     }
 }

@@ -7,6 +7,7 @@ namespace NSchedule
     {
         // Meta
         internal const string USER_AGENT = "NSchedule for Android";
+        internal const string SHARED_WITH = "Shared with NSchedule.";
         // TODO misschien user agent veranderen? Deze user agent zegt praktisch gezien "joehoe! ik gebruik een onofficiele app!"
 
         // Endpoints

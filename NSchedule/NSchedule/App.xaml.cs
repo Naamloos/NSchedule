@@ -1,4 +1,5 @@
 ﻿using NSchedule.Helpers;
+using NSchedule.ViewModels;
 using NSchedule.Views;
 using Plugin.Toast;
 using System;
@@ -44,6 +45,8 @@ namespace NSchedule
                 btn.IsVisible = true;
                 var spinner = Shell.Current.GetCurrentPage().FindByName<ActivityIndicator>("spinner");
                 spinner.IsRunning = false;
+                var bind = (LoginViewModel)Shell.Current.GetCurrentPage().BindingContext;
+                bind.LoginVisible = true;
             }
         }
 

@@ -13,6 +13,7 @@ using Xamarin.Forms;
 
 namespace NSchedule.ViewModels
 {
+    // TODO: Rename RoosterView to something like ScheduleListView
     public class RoosterViewModel : BaseViewModel
     {
         public Command AddItemCommand { get; }

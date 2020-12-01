@@ -12,13 +12,16 @@
                 <ContentView Padding="0,40,0,40" VerticalOptions="FillAndExpand">
                     <Image Source="cal.png" VerticalOptions="Center" HeightRequest="64" />
                 </ContentView>
-                <Label Text="NSchedule" HorizontalOptions="Center" InputTransparent="False" FontSize="Title" Padding="0,0,0,25" />
-                <Label Text="Email" />
-                <Entry Text="{Binding Username, Mode=TwoWay}" FontSize="Medium" Placeholder="firstname.lastname@student.nhlstenden.com" Keyboard="Email" />
-                <Label Text="Password" />
-                <Entry Text="{Binding Password, Mode=TwoWay}" FontSize="Medium" IsPassword="True" Placeholder="********" />
+                <StackLayout x:Name="Loginform" IsVisible="{Binding LoginVisible}">
+                    <Label Text="NSchedule" HorizontalOptions="Center" InputTransparent="False" FontSize="Title" Padding="0,0,0,25" />
+                    <Label Text="Email" />
+                    <Entry Text="{Binding Username, Mode=TwoWay}" FontSize="Medium" Placeholder="Email" Keyboard="Email" />
+                    <Label Text="Password" />
+                    <Entry Text="{Binding Password, Mode=TwoWay}" FontSize="Medium" IsPassword="True" Placeholder="Password"/>
+                </StackLayout>
+                
                 <ActivityIndicator x:Name="spinner" IsRunning="True" />
-                <Button VerticalOptions="Center" Text="Login" Command="{Binding LoginCommand}" Padding="0"  x:Name="login" IsVisible="False"/>
+                <Button VerticalOptions="Center" Text="Login" Command="{Binding LoginCommand}" Padding="0"  x:Name="login" IsVisible="{Binding LoginVisible}"/>
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>

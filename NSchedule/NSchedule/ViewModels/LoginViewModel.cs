@@ -15,6 +15,13 @@ namespace NSchedule.ViewModels
         public string Username { get; set; }
         public string Password { get; set; }
 
+        bool loginvisible = false;
+        public bool LoginVisible
+        {
+            get { return loginvisible; }
+            set { SetProperty(ref loginvisible, value); }
+        }
+
         public LoginViewModel()
         {
             LoginCommand = new Command(async e => await OnLoginClicked(e));
@@ -25,11 +32,13 @@ namespace NSchedule.ViewModels
             Shell.Current.GetCurrentPage().FindByName<Button>("login").IsVisible = false;
             var spinner = Shell.Current.GetCurrentPage().FindByName<ActivityIndicator>("spinner");
             spinner.IsRunning = true;
+            LoginVisible = false;
             CrossToastPopUp.Current.ShowToastMessage("Attempting login...");
             if (Username is null || Password is null)
             {
                 Shell.Current.GetCurrentPage().FindByName<Button>("login").IsVisible = true;
                 spinner.IsRunning = false;
+                LoginVisible = true;
                 CrossToastPopUp.Current.ShowToastMessage("Please enter both Username and Password.");
                 return;
             }
@@ -46,6 +55,7 @@ namespace NSchedule.ViewModels
             {
                 Shell.Current.GetCurrentPage().FindByName<Button>("login").IsVisible = true;
                 spinner.IsRunning = false;
+                LoginVisible = true;
             }
         }
     }

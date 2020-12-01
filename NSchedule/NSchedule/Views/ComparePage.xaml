@@ -5,9 +5,10 @@
              Title="{Binding Title}"
              x:Name="ViewRoosterPage">
     <StackLayout>
-        <ScrollView>
+        <Button Text="Compare" Command="{Binding Compare}" VerticalOptions="FillAndExpand" Margin="15"/>
+        <ScrollView VerticalOptions="Start">
             <StackLayout>
-                <ListView x:Name="SelectedSchedules" ItemsSource="{Binding Schedules}" Margin="15, 5" >
+                <ListView x:Name="SelectedSchedules" ItemsSource="{Binding Schedules}" VerticalOptions="Fill">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -21,7 +22,6 @@
                 </ListView>
             </StackLayout>
         </ScrollView>
-        <Button Text="Compare" Command="{Binding Compare}"/>
     </StackLayout>
     
 </ContentPage>

@@ -1,7 +1,9 @@
 ﻿using NSchedule.Entities;
+using NSchedule.Popups;
 using Plugin.Toast;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -78,18 +80,33 @@ namespace NSchedule.ViewModels
                         prog = 1 - prog;
                         var rooms = Data.Schedulables.Where(x => x.GetType() == typeof(Room) && app.Attendees.Contains(x.Id));
                         var attendees = Data.Schedulables.Where(x => x.GetType() != typeof(Room) && app.Attendees.Contains(x.Id));
-
-                        events.Add(new CalendarEvent()
+                        var cevent = new CalendarEvent()
                         {
-                            Name = $"{app.Name}{(Scheduleables.Count > 1 ? $" ({s.Code})" : "")}",
-                            Description = $"{app.Start.ToString("HH:mm")} - {app.End.ToString("HH:mm")}",
+                            Name = $"{app.Name}",
+                            ScheduleableCode = s.Code,
+                            Times = $"{app.Start.ToString("HH:mm")} - {app.End.ToString("HH:mm")}",
                             End = app.End,
                             Start = app.Start,
                             ScheduleColor = color,
                             Progress = prog,
-                            Rooms = $"Rooms: {string.Join(", ", rooms.Select(x => x.Code))}",
-                            Attendees = $"Attendees: {string.Join(", ", attendees.Select(x => x.Code))}"
+                            Rooms = string.Join(", ", rooms.Select(x => x.Code)),
+                            Attendees = string.Join(", ", attendees.Select(x => x.Code)),
+                            Appointment = app
+                        };
+
+                        cevent.InfoCommand = new Command(async () =>
+                        {
+                            var pop = new AppointmentInfo(cevent);
+
+                            await Rg.Plugins.Popup.Services.PopupNavigation.Instance.PushAsync(pop);
                         });
+
+                        if (!string.IsNullOrEmpty(app.Attention))
+                        {
+                            cevent.Urgent = Color.Red;
+                        }
+
+                        events.Add(cevent);
                     }
                 }
                 events = events.OrderBy(x => x.Start).ToList();

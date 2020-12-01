@@ -16,17 +16,17 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout Orientation="Horizontal">
+                            <StackLayout Orientation="Horizontal" VerticalOptions="Fill">
                                 <Label Text="{Binding Code}" VerticalOptions="Center" HorizontalOptions="StartAndExpand">
-                                    <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding BindingContext.OpenSchedule, Source={x:Reference Name=ViewRoosterPage}}}"
+                                </Label>
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BindingContext.OpenSchedule, Source={x:Reference Name=ViewRoosterPage}}}"
                                                       CommandParameter="{Binding Code}"
                                                           NumberOfTapsRequired="1"/>
-                                        <TapGestureRecognizer Command="{Binding BindingContext.RemoveFromListCommand, Source={x:Reference Name=ViewRoosterPage}}}"
+                                    <TapGestureRecognizer Command="{Binding BindingContext.RemoveFromListCommand, Source={x:Reference Name=ViewRoosterPage}}}"
                                                       CommandParameter="{Binding Code}"
                                                           NumberOfTapsRequired="2"/>
-                                    </Label.GestureRecognizers>
-                                </Label>
+                                </StackLayout.GestureRecognizers>
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>
