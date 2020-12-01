@@ -1,7 +1,9 @@
 ﻿using NSchedule.Helpers;
+using NSchedule.Views;
 using Plugin.Toast;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;

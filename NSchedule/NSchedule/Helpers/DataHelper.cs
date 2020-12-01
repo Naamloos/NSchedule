@@ -13,6 +13,12 @@ namespace NSchedule.Helpers
         private RestHelper _rest;
         private Database _db;
 
+        public bool RedirectOnLaunch = false;
+        public int RedirectDay = 0;
+        public int RedirectMonth = 0;
+        public int RedirectYear = 0;
+        public string RedirectCode = "";
+
         public ObservableCollection<Year> Years { get; private set; } = new ObservableCollection<Year>();
         public ObservableCollection<OrganisationalUnit> OrganisationalUnits { get; private set; } = new ObservableCollection<OrganisationalUnit>();
         public ObservableCollection<Scheduleable> Schedulables { get; private set; } = new ObservableCollection<Scheduleable>();

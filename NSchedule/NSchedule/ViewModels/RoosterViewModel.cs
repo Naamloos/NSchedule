@@ -38,7 +38,8 @@ namespace NSchedule.ViewModels
         {
             CrossToastPopUp.Current.ShowToastMessage($"Selected {s}.");
             Shell.Current.GetCurrentPage().FindByName<ListView>("SelectedSchedules").SelectedItem = null;
-            await Shell.Current.GetCurrentPage().Navigation.PushAsync(new ScheduleViewPage(Data.Schedulables.First(x => x.Code == s)));
+            var today = DateTime.Now;
+            await Shell.Current.GetCurrentPage().Navigation.PushAsync(new ScheduleViewPage(today.Day, today.Month, today.Year, Data.Schedulables.First(x => x.Code == s)));
         }
 
         private async Task RemoveFromListAsync(string item)

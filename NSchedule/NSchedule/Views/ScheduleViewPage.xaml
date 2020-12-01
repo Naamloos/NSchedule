@@ -6,16 +6,10 @@
              xmlns:controls="clr-namespace:Xamarin.Plugin.Calendar.Controls;assembly=Xamarin.Plugin.Calendar"
              Title="{Binding Title}" NavigationPage.HasNavigationBar="True">
 
-    <ContentPage.BindingContext>
-        <vm:ScheduleViewViewModel />
-    </ContentPage.BindingContext>
-
     <StackLayout>
         <controls:Calendar
             VerticalOptions="FillAndExpand"
             HorizontalOptions="FillAndExpand"
-            Year="{Binding CurrentYear}"
-            Month="{Binding CurrentMonth}" 
             AnimateCalendar="True"
             x:Name="Schedule"
             Margin="15,0"
@@ -25,7 +19,8 @@
             EventIndicatorColor="Transparent"
             ArrowsColor="#000000"
             SwipeToChangeMonthEnabled="True"
-            SwipeUpToHideEnabled="True">
+            SwipeUpToHideEnabled="True"
+            SelectedDate="{Binding Today}">
             <controls:Calendar.EmptyTemplate>
                 <DataTemplate>
                     <StackLayout>

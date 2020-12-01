@@ -3,6 +3,7 @@ using NSchedule.ViewModels;
 using NSchedule.Views;
 using Plugin.Toast;
 using System;
+using System.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -10,8 +11,7 @@ namespace NSchedule
 {
     public partial class App : Application
     {
-
-        public App()
+        public App(string uri = "")
         {
             InitializeComponent();
 
@@ -26,6 +26,17 @@ namespace NSchedule
             Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
         }
 
+        public void SendToSchedule(string code, int month, int day, int year)
+        {
+            var dat = DependencyService.Get<DataHelper>();
+
+            dat.RedirectMonth = month;
+            dat.RedirectDay = day;
+            dat.RedirectYear = year;
+            dat.RedirectCode = code;
+            dat.RedirectOnLaunch = true;
+        }
+
         protected override async void OnStart()
         {
             CrossToastPopUp.Current.ShowToastMessage("One moment, trying to re-authenticate...");
@@ -33,8 +44,21 @@ namespace NSchedule
             if (reauth.Success)
             {
                 CrossToastPopUp.Current.ShowToastMessage(reauth.Message);
-                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
                 await DependencyService.Get<DataHelper>().PreloadDataAsync();
+                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
+                var data = DependencyService.Get<DataHelper>();
+                if (data.RedirectOnLaunch)
+                {
+                    data.RedirectOnLaunch = false;
+                    if (data.Schedulables.Any(x => x.Code == data.RedirectCode))
+                    {
+                        var sched = data.Schedulables.First(x => x.Code == data.RedirectCode);
+                        var nav = Shell.Current.Navigation;
+                        await nav.PushAsync(
+                            new ScheduleViewPage(data.RedirectDay, data.RedirectMonth, data.RedirectYear,
+                            data.Schedulables.First(x => x.Code == data.RedirectCode)));
+                    }
+                }
             }
             else
             {

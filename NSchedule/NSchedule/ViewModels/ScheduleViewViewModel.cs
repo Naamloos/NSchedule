@@ -16,6 +16,22 @@ namespace NSchedule.ViewModels
     {
         public int CurrentYear { get; set; } = 2020;
         public int CurrentMonth { get; set; } = 1;
+        public int CurrentDay { get; set; }
+
+        public DateTime Today
+        {
+            get
+            {
+                return new DateTime(CurrentYear, CurrentMonth, CurrentDay);
+            }
+            set
+            {
+                CurrentDay = value.Day;
+                CurrentYear = value.Year;
+                CurrentMonth = value.Month;
+            }
+        }
+
         public Command<DateTime> DayTapped { get; }
         public List<Scheduleable> Scheduleables { get; set; }
         public EventCollection Events { get; set; } = new EventCollection();
@@ -25,7 +41,16 @@ namespace NSchedule.ViewModels
             var today = DateTime.Now;
             CurrentYear = today.Year;
             CurrentMonth = today.Month;
+            CurrentDay = today.Day;
             this.DayTapped = new Command<DateTime>(async day => await LoadNewDayAsync(day));
+        }
+
+        public ScheduleViewViewModel(int day, int month, int year)
+        {
+            CurrentYear = year;
+            CurrentMonth = month;
+            CurrentDay = day;
+            this.DayTapped = new Command<DateTime>(async mday => await LoadNewDayAsync(mday));
         }
 
         public void ForSchedules(params Scheduleable[] s)
