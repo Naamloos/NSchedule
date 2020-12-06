@@ -87,14 +87,14 @@ namespace NSchedule.Helpers
             }
 
             // Getting SAML paths
-            var samlpath = await getSamlPathAsync(loginpath);
+            var samlpath = await getSamlPathAsync(loginpath).ConfigureAwait(false);
             if (samlpath == null)
             {
                 return (false, "Wait... something went wrong. Did NHL Stenden change their login?");
             }
 
             // Trying to authenticate and get saml response
-            var samlresponse = await getSamlResponseAsync(samlpath, username, password);
+            var samlresponse = await getSamlResponseAsync(samlpath, username, password).ConfigureAwait(false);
             if (samlresponse == null)
             {
                 return (false, "Invalid credentials!");
@@ -102,7 +102,7 @@ namespace NSchedule.Helpers
 
             // trying to get surf auth and relay state
 
-            var surf = await getSurfAsync(samlresponse);
+            var surf = await getSurfAsync(samlresponse).ConfigureAwait(false);
             if (surf.samlresponse == null || surf.relaystate == null)
             {
                 return (false, "Something went really really wrong behind the scenes!");
@@ -110,13 +110,13 @@ namespace NSchedule.Helpers
             surf.relaystate = surf.relaystate.Replace("&amp;", "&");
 
             // Authenticating
-            var auth = await authenticateAsync(surf.samlresponse, surf.relaystate);
+            var auth = await authenticateAsync(surf.samlresponse, surf.relaystate).ConfigureAwait(false);
 
-            var settings = await _db.GetSettingsAsync();
+            var settings = await _db.GetSettingsAsync().ConfigureAwait(false);
             settings.CookieString = generateCookieString();
             settings.Email = username;
             settings.Password = password;
-            await _db.SetSettingsAsync(settings);
+            await _db.SetSettingsAsync(settings).ConfigureAwait(false);
 
             if (auth)
                 return (true, "Sign in successful!");
@@ -131,13 +131,13 @@ namespace NSchedule.Helpers
         public async Task<(bool Success, string Message)> CheckAndReconnectSessionAsync()
         {
             // This will check whether the saved session still works
-            var settings = await _db.GetSettingsAsync();
+            var settings = await _db.GetSettingsAsync().ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(settings.CookieString))
             {
                 splitCookieString(settings.CookieString);
                 // Do een request om te testen of cookies valid zijn
-                var response = await getAsync(Constants.API_ENDPOINT + $"/year", settings.CookieString);
+                var response = await getAsync(Constants.API_ENDPOINT + $"/year", settings.CookieString).ConfigureAwait(false);
 
                 var forbidden = response.StatusCode == HttpStatusCode.Forbidden;
                 if (!forbidden)
@@ -148,7 +148,7 @@ namespace NSchedule.Helpers
             }
 
             // als invalid koekjes, probeer nog 1x in te loggen met oude auth..
-            var auth = await this.Authenticate(settings.Email, settings.Password);
+            var auth = await this.Authenticate(settings.Email, settings.Password).ConfigureAwait(false);
 
             // Re-auth met login OK
             if (auth.Success)
@@ -189,8 +189,8 @@ namespace NSchedule.Helpers
         /// <returns>A calendar.</returns>
         public async Task<Calendar> GetCalendarAsync(int school, int weekNumber)
         {
-            var response = await getAsync(Constants.API_ENDPOINT + $"/calendar/{school}_{weekNumber}");
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await getAsync(Constants.API_ENDPOINT + $"/calendar/{school}_{weekNumber}").ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return JsonConvert.DeserializeObject<Calendar>(content);
         }
@@ -201,8 +201,8 @@ namespace NSchedule.Helpers
         /// <returns>A list of organisational units.</returns>
         public async Task<List<OrganisationalUnit>> GetOrganisationalUnitsAsync()
         {
-            var response = await getAsync(Constants.API_ENDPOINT + $"/organisationalUnit");
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await getAsync(Constants.API_ENDPOINT + $"/organisationalUnit").ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return JsonConvert.DeserializeObject<List<OrganisationalUnit>>(content);
         }
@@ -213,8 +213,8 @@ namespace NSchedule.Helpers
         /// <returns>A list of years.</returns>
         public async Task<List<Year>> GetYearsAsync()
         {
-            var response = await getAsync(Constants.API_ENDPOINT + $"/year");
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await getAsync(Constants.API_ENDPOINT + $"/year").ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return JsonConvert.DeserializeObject<List<Year>>(content);
         }
@@ -225,8 +225,8 @@ namespace NSchedule.Helpers
         /// <returns>A list of rooms.</returns>
         public async Task<List<Room>> GetRoomsAsync()
         {
-            var response = await getAsync(Constants.API_ENDPOINT + $"/facility");
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await getAsync(Constants.API_ENDPOINT + $"/facility").ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return JsonConvert.DeserializeObject<List<Room>>(content);
         }
@@ -237,8 +237,8 @@ namespace NSchedule.Helpers
         /// <returns>A list of teachers.</returns>
         public async Task<List<Teacher>> GetTeachersAsync()
         {
-            var response = await getAsync(Constants.API_ENDPOINT + $"/docent");
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await getAsync(Constants.API_ENDPOINT + $"/docent").ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return JsonConvert.DeserializeObject<List<Teacher>>(content);
         }
@@ -249,8 +249,8 @@ namespace NSchedule.Helpers
         /// <returns>A list of teams.</returns>
         public async Task<List<Team>> GetTeamsAsync()
         {
-            var response = await getAsync(Constants.API_ENDPOINT + $"/team");
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await getAsync(Constants.API_ENDPOINT + $"/team").ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return JsonConvert.DeserializeObject<List<Team>>(content);
         }
@@ -261,8 +261,8 @@ namespace NSchedule.Helpers
         /// <returns>A list of groups.</returns>
         public async Task<List<Group>> GetGroupsAsync()
         {
-            var response = await getAsync(Constants.API_ENDPOINT + $"/group");
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await getAsync(Constants.API_ENDPOINT + $"/group").ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return JsonConvert.DeserializeObject<List<Group>>(content);
         }
@@ -277,8 +277,8 @@ namespace NSchedule.Helpers
         /// <returns>A Schedule.</returns>
         public async Task<Schedule> GetScheduleAsync(long schoolid, long year, long weeknum, long id)
         {
-            var response = await getAsync(Constants.API_ENDPOINT + $"/schedule/?ids%5B0%5D={schoolid}_{year}_{weeknum}_{id}");
-            var content = await response.Content.ReadAsStringAsync();
+            var response = await getAsync(Constants.API_ENDPOINT + $"/schedule/?ids%5B0%5D={schoolid}_{year}_{weeknum}_{id}").ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var results = JsonConvert.DeserializeObject<List<Schedule>>(content);
 
@@ -297,7 +297,7 @@ namespace NSchedule.Helpers
             assertform.Add("SAMLResponse", samlresponse);
             assertform.Add("RelayState", relaystate);
 
-            var resp = await postAsync(Constants.ASSERTION_ENDPOINT, new FormUrlEncodedContent(assertform));
+            var resp = await postAsync(Constants.ASSERTION_ENDPOINT, new FormUrlEncodedContent(assertform)).ConfigureAwait(false);
 
             return resp.StatusCode == HttpStatusCode.OK;
         }
@@ -312,7 +312,7 @@ namespace NSchedule.Helpers
             var surfform = new Dictionary<string, string>();
             surfform.Add("SAMLResponse", samlresponse);
 
-            var surfresponse = await (await postAsync(Constants.SURF_ENDPOINT, new FormUrlEncodedContent(surfform))).Content.ReadAsStringAsync();
+            var surfresponse = await (await postAsync(Constants.SURF_ENDPOINT, new FormUrlEncodedContent(surfform)).ConfigureAwait(false)).Content.ReadAsStringAsync().ConfigureAwait(false);
             var surfdoc = new HtmlDocument();
             surfdoc.LoadHtml(surfresponse);
 
@@ -330,7 +330,7 @@ namespace NSchedule.Helpers
         /// <returns>SAML path.</returns>
         private async Task<string> getSamlPathAsync(string loginpath)
         {
-            var loginpage = await (await getAsync(loginpath)).Content.ReadAsStringAsync();
+            var loginpage = await (await getAsync(loginpath).ConfigureAwait(false)).Content.ReadAsStringAsync().ConfigureAwait(false);
             var logindoc = new HtmlDocument();
             logindoc.LoadHtml(loginpage);
 
@@ -351,7 +351,7 @@ namespace NSchedule.Helpers
             samlform.Add("Password", pass);
             samlform.Add("AuthMethod", "FormsAuthentication");
 
-            var samlpage = await (await postAsync(samlpath, new FormUrlEncodedContent(samlform))).Content.ReadAsStringAsync();
+            var samlpage = await (await postAsync(samlpath, new FormUrlEncodedContent(samlform)).ConfigureAwait(false)).Content.ReadAsStringAsync().ConfigureAwait(false);
             var samldoc = new HtmlDocument();
             samldoc.LoadHtml(samlpage);
 
@@ -380,12 +380,12 @@ namespace NSchedule.Helpers
                 _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
             else
                 _http.DefaultRequestHeaders.Add("Cookie", cookieoverride);
-            var resp = await _http.GetAsync(uri);
+            var resp = await _http.GetAsync(uri).ConfigureAwait(false);
 
             if ((int)resp.StatusCode >= 300 && (int)resp.StatusCode <= 399)
             {
                 var redirectUri = new Uri(uri.GetLeftPart(UriPartial.Authority) + resp.Headers.Location.OriginalString);
-                return await getAsync(redirectUri.ToString());
+                return await getAsync(redirectUri.ToString()).ConfigureAwait(false);
             }
 
             updateCookies();
@@ -406,15 +406,15 @@ namespace NSchedule.Helpers
             _http.DefaultRequestHeaders.Remove("Cookie");
             if (!nocookies)
                 _http.DefaultRequestHeaders.Add("Cookie", generateCookieString());
-            var resp = await _http.PostAsync(uri, form);
+            var resp = await _http.PostAsync(uri, form).ConfigureAwait(false);
 
             var hh = resp.Headers.ToString();
-            var content = await resp.Content.ReadAsStringAsync();
+            var content = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
             var h = resp.RequestMessage.Headers.ToString();
 
             if ((int)resp.StatusCode >= 300 && (int)resp.StatusCode <= 399)
             {
-                return await postAsync(resp.Headers.Location.ToString(), form, nocookies);
+                return await postAsync(resp.Headers.Location.ToString(), form, nocookies).ConfigureAwait(false);
             }
 
             updateCookies();

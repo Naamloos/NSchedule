@@ -1,4 +1,5 @@
-﻿using NSchedule.Helpers;
+﻿using Emzi0767.Utilities;
+using NSchedule.Helpers;
 using NSchedule.ViewModels;
 using NSchedule.Views;
 using Plugin.Toast;
@@ -18,6 +19,7 @@ namespace NSchedule
             var db = new Database();
             var rest = new RestHelper(db);
             var data = new DataHelper(rest, db);
+            DependencyService.RegisterSingleton(new AsyncExecutor());
             DependencyService.RegisterSingleton(db);
             DependencyService.RegisterSingleton(rest);
             DependencyService.RegisterSingleton(data);
@@ -40,12 +42,12 @@ namespace NSchedule
         protected override async void OnStart()
         {
             CrossToastPopUp.Current.ShowToastMessage("One moment, trying to re-authenticate...");
-            var reauth = await DependencyService.Get<RestHelper>().CheckAndReconnectSessionAsync();
+            var reauth = await DependencyService.Get<RestHelper>().CheckAndReconnectSessionAsync().ConfigureAwait(false);
             if (reauth.Success)
             {
                 CrossToastPopUp.Current.ShowToastMessage(reauth.Message);
-                await DependencyService.Get<DataHelper>().PreloadDataAsync();
-                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
+                await DependencyService.Get<DataHelper>().PreloadDataAsync().ConfigureAwait(false);
+                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}").ConfigureAwait(false);
                 var data = DependencyService.Get<DataHelper>();
                 if (data.RedirectOnLaunch)
                 {
@@ -56,7 +58,7 @@ namespace NSchedule
                         var nav = Shell.Current.Navigation;
                         await nav.PushAsync(
                             new ScheduleViewPage(data.RedirectDay, data.RedirectMonth, data.RedirectYear,
-                            data.Schedulables.First(x => x.Code == data.RedirectCode)));
+                            data.Schedulables.First(x => x.Code == data.RedirectCode))).ConfigureAwait(false);
                     }
                 }
             }

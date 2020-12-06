@@ -1,4 +1,5 @@
-﻿using NSchedule.Entities;
+﻿using Emzi0767.Utilities;
+using NSchedule.Entities;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace NSchedule.Helpers
 
         public Database()
         {
-            InitializeAsync().SafeFireAndForget(false);
+            DependencyService.Get<AsyncExecutor>().Execute(InitializeAsync());
         }
 
         async Task InitializeAsync()
@@ -45,7 +46,7 @@ namespace NSchedule.Helpers
             if(await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() < 1)
             {
                 var c = Color.Default.Random();
-                await InternalDatabase.InsertAsync(new DatabaseScheduleable() { Code = code, Color = c.ToHex() });
+                await InternalDatabase.InsertAsync(new DatabaseScheduleable() { Code = code, Color = c.ToHex() }).ConfigureAwait(false);
             }
         }
 
@@ -53,7 +54,7 @@ namespace NSchedule.Helpers
         {
             if (await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() > 0)
             {
-                var s = await InternalDatabase.Table<DatabaseScheduleable>().FirstAsync(x => x.Code == code);
+                var s = await InternalDatabase.Table<DatabaseScheduleable>().FirstAsync(x => x.Code == code).ConfigureAwait(false);
                 return Color.FromHex(s.Color);
             }
             else
@@ -66,23 +67,23 @@ namespace NSchedule.Helpers
         {
             if (await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() > 0)
             {
-                var rem = await InternalDatabase.Table<DatabaseScheduleable>().DeleteAsync(x => x.Code == code);
+                var rem = await InternalDatabase.Table<DatabaseScheduleable>().DeleteAsync(x => x.Code == code).ConfigureAwait(false);
             }
         }
 
         public async Task<List<string>> GetSchedulesAsync()
         {
             var list = new List<string>();
-            list.AddRange((await InternalDatabase.Table<DatabaseScheduleable>().Where(x => true).ToListAsync()).Select(x => x.Code));
+            list.AddRange((await InternalDatabase.Table<DatabaseScheduleable>().Where(x => true).ToListAsync().ConfigureAwait(false)).Select(x => x.Code));
             return list;
         }
 
         public async Task<Settings> GetSettingsAsync()
         {
-            if (await InternalDatabase.Table<Settings>().CountAsync() > 0)
+            if (await InternalDatabase.Table<Settings>().CountAsync().ConfigureAwait(false) > 0)
             {
                 // This table can (SHOULD) only have one value.
-                return await InternalDatabase.Table<Settings>().FirstAsync();
+                return await InternalDatabase.Table<Settings>().FirstAsync().ConfigureAwait(false);
             }
 
             return new Settings();
@@ -90,14 +91,14 @@ namespace NSchedule.Helpers
 
         public async Task SetSettingsAsync(Settings s)
         {
-            if (await InternalDatabase.Table<Settings>().CountAsync() > 0)
+            if (await InternalDatabase.Table<Settings>().CountAsync().ConfigureAwait(false) > 0)
             {
                 // This table can (SHOULD) only have one value.
-                await InternalDatabase.UpdateAsync(s);
+                await InternalDatabase.UpdateAsync(s).ConfigureAwait(false);
             }
             else
             {
-                await InternalDatabase.InsertAsync(s);
+                await InternalDatabase.InsertAsync(s).ConfigureAwait(false);
             }
         }
 

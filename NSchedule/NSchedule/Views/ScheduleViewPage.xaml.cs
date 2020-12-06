@@ -1,4 +1,5 @@
-﻿using NSchedule.Entities;
+﻿using Emzi0767.Utilities;
+using NSchedule.Entities;
 using NSchedule.Helpers;
 using NSchedule.ViewModels;
 using Plugin.Toast;
@@ -19,7 +20,7 @@ namespace NSchedule.Views
             this.BindingContext = new ScheduleViewViewModel(day, month, year);
             var binding = (ScheduleViewViewModel)this.BindingContext;
             binding.ForSchedules(s);
-            binding.LoadNewDayAsync(new DateTime(year, month, day)).SafeFireAndForget(false);
+            DependencyService.Get<AsyncExecutor>().Execute(binding.LoadNewDayAsync(new DateTime(year, month, day)));
         }
     }
 }

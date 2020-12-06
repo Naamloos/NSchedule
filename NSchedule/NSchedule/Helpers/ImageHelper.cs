@@ -69,8 +69,8 @@ namespace NSchedule.Helpers
 
             var basePath = System.IO.Path.GetTempPath();
             var path = System.IO.Path.Combine(basePath, "share.png");
-            await img.SaveAsPngAsync(path);
-            await Share.RequestAsync(new ShareFileRequest(c.Name, new ShareFile(path)));
+            await img.SaveAsPngAsync(path).ConfigureAwait(false);
+            await Share.RequestAsync(new ShareFileRequest(c.Name, new ShareFile(path))).ConfigureAwait(false);
             // cleanup after share..
             //File.Delete(path);
         }
