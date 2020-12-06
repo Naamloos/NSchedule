@@ -14,19 +14,20 @@ using Xamarin.Forms;
 namespace NSchedule.ViewModels
 {
     // TODO: Rename RoosterView to something like ScheduleListView
-    public class RoosterViewModel : BaseViewModel
+    public class ScheduleListViewModel : BaseViewModel
     {
         public Command AddItemCommand { get; }
-        public ObservableCollection<Scheduleable> Schedules { get { return this.Data.Tracked; } set { } }
-        public Command<string> RemoveFromListCommand { get; }
+        public ObservableCollection<DatabaseScheduleable> Schedules { get { return this.Data.Tracked; } set { } }
         public Command<string> OpenSchedule { get; }
 
-        public RoosterViewModel()
+        public Command<string> EditItem { get; }
+
+        public ScheduleListViewModel()
         {
             Title = "Schedules";
             this.AddItemCommand = new Command(async e => await ViewAddDialogAsync(e));
-            this.RemoveFromListCommand = new Command<string>(async s => await RemoveFromListAsync(s));
             this.OpenSchedule = new Command<string>(async s => await ItemSelectedAsync(s));
+            this.EditItem = new Command<string>(async s => await EditItemAsync(s));
         }
 
         public void OnAppearing()
@@ -39,18 +40,22 @@ namespace NSchedule.ViewModels
             StaticMethods.Toast($"Selected {s}.");
             Shell.Current.GetCurrentPage().FindByName<ListView>("SelectedSchedules").SelectedItem = null;
             var today = DateTime.Now;
-            await Shell.Current.GetCurrentPage().Navigation.PushAsync(new ScheduleViewPage(today.Day, today.Month, today.Year, Data.Schedulables.First(x => x.Code == s)));
-        }
-
-        private async Task RemoveFromListAsync(string item)
-        {
-            StaticMethods.Toast($"Removed {item}.");
-            await this.Data.RemoveTrackedSchedule(item);
+            await Shell.Current.GetCurrentPage().Navigation.PushAsync(new ScheduleViewPage(today.Day, today.Month, today.Year, this.Schedules.First(x => x.Code == s)));
         }
 
         private async Task ViewAddDialogAsync(object e)
         {
             var pop = new ScheduleSelect();
+
+            await Rg.Plugins.Popup.Services.PopupNavigation.Instance.PushAsync(pop);
+        }
+
+        private async Task EditItemAsync(string item)
+        {
+            StaticMethods.Toast($"Edit popup for {item}.");
+
+            var pop = new EditSchedule();
+            pop.BindingContext = new EditScheduleViewModel(this.Schedules.First(x => x.Code == item));
 
             await Rg.Plugins.Popup.Services.PopupNavigation.Instance.PushAsync(pop);
         }

@@ -13,15 +13,15 @@ using Xamarin.Forms.Xaml;
 
 namespace NSchedule.Views
 {
-    public partial class RoosterPage : ContentPage
+    public partial class ScheduleListPage : ContentPage
     {
-        RoosterViewModel _viewModel;
+        ScheduleListViewModel _viewModel;
 
-        public RoosterPage()
+        public ScheduleListPage()
         {
             InitializeComponent();
 
-            BindingContext = _viewModel = new RoosterViewModel();
+            BindingContext = _viewModel = new ScheduleListViewModel();
         }
 
         protected override void OnAppearing()

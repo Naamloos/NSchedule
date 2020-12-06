@@ -1,4 +1,5 @@
 ﻿using Emzi0767.Utilities;
+using NSchedule.Entities;
 using NSchedule.Helpers;
 using NSchedule.ViewModels;
 using NSchedule.Views;
@@ -65,7 +66,7 @@ namespace NSchedule
                         var nav = Shell.Current.Navigation;
                         await nav.PushAsync(
                             new ScheduleViewPage(data.RedirectDay, data.RedirectMonth, data.RedirectYear,
-                            data.Schedulables.First(x => x.Code == data.RedirectCode)));
+                            new DatabaseScheduleable() { Code = sched.Code, Color = Color.DarkGray.ToHex() }));
                     }
                 }
             }

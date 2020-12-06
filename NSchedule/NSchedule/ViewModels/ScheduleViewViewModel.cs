@@ -33,7 +33,7 @@ namespace NSchedule.ViewModels
         }
 
         public Command<DateTime> DayTapped { get; }
-        public List<Scheduleable> Scheduleables { get; set; }
+        public List<DatabaseScheduleable> Scheduleables { get; set; }
         public EventCollection Events { get; set; } = new EventCollection();
 
         public ScheduleViewViewModel()
@@ -53,7 +53,7 @@ namespace NSchedule.ViewModels
             this.DayTapped = new Command<DateTime>(async mday => await LoadNewDayAsync(mday));
         }
 
-        public void ForSchedules(params Scheduleable[] s)
+        public void ForSchedules(params DatabaseScheduleable[] s)
         {
             this.Scheduleables = s.ToList();
             if (s.Count() < 2)
@@ -70,8 +70,9 @@ namespace NSchedule.ViewModels
 
                 foreach (var s in Scheduleables)
                 {
+                    var schedulable = this.Data.Schedulables.First(x => x.Code == s.Code);
                     //var cal = Shell.Current.GetCurrentPage().FindByName<Xamarin.Plugin.Calendar.Controls.Calendar>("Schedule");
-                    var orgs = Data.OrganisationalUnits.Where(x => s.Orus.Contains(long.Parse(x.Id)));
+                    var orgs = Data.OrganisationalUnits.Where(x => schedulable.Orus.Contains(long.Parse(x.Id)));
                     var color = await Database.GetColorForCodeAsync(s.Code);
                     var schedule = new List<Appointment>();
                     foreach (var o in orgs)
@@ -86,7 +87,7 @@ namespace NSchedule.ViewModels
                         if (year != null)
                         {
                             // bri 'ish people be like sched juul
-                            var sched = await Rest.GetScheduleAsync(long.Parse(o.Id), year.ActualYear, d.GetIso8601WeekOfYear(), s.Id);
+                            var sched = await Rest.GetScheduleAsync(long.Parse(o.Id), year.ActualYear, d.GetIso8601WeekOfYear(), schedulable.Id);
                             if (sched != null)
                                 schedule.AddRange(sched.Appointments);
                         }

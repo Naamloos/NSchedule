@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="NSchedule.Views.RoosterPage"
+             x:Class="NSchedule.Views.ScheduleListPage"
              Title="{Binding Title}"
-             x:Name="ViewRoosterPage">
+             x:Name="ViewScheduleListPage">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add" Command="{Binding AddItemCommand}" />
@@ -11,19 +11,20 @@
     
     <ScrollView>
         <StackLayout>
-            <Label Text="Tap once to open, Tap twice to remove." Margin="10" HorizontalOptions="Center"/>
-            <ListView x:Name="SelectedSchedules" ItemsSource="{Binding Schedules}" Margin="15, 5">
+            <Label Text="Tap once to open, Tap twice to edit." Margin="10" HorizontalOptions="Center"/>
+            <ListView x:Name="SelectedSchedules" ItemsSource="{Binding Schedules}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <StackLayout Orientation="Horizontal" VerticalOptions="Fill">
-                                <Label Text="{Binding Code}" VerticalOptions="Center" HorizontalOptions="StartAndExpand">
+                                <BoxView BackgroundColor="{Binding ColorObj}" WidthRequest="5" VerticalOptions="Fill"/>
+                                <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="StartAndExpand">
                                 </Label>
                                 <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding BindingContext.OpenSchedule, Source={x:Reference Name=ViewRoosterPage}}}"
                                                       CommandParameter="{Binding Code}"
                                                           NumberOfTapsRequired="1"/>
-                                    <TapGestureRecognizer Command="{Binding BindingContext.RemoveFromListCommand, Source={x:Reference Name=ViewRoosterPage}}}"
+                                    <TapGestureRecognizer Command="{Binding BindingContext.EditItem, Source={x:Reference Name=ViewRoosterPage}}}"
                                                       CommandParameter="{Binding Code}"
                                                           NumberOfTapsRequired="2"/>
                                 </StackLayout.GestureRecognizers>

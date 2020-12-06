@@ -40,13 +40,17 @@ namespace NSchedule.Helpers
             }
         }
 
-        public async Task AddScheduleAsync(string code)
+        public async Task<DatabaseScheduleable> AddScheduleAsync(string code)
         {
             if(await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() < 1)
             {
                 var c = Color.Default.Random();
-                await InternalDatabase.InsertAsync(new DatabaseScheduleable() { Code = code, Color = c.ToHex() }).ConfigureAwait(false);
+                var sc = new DatabaseScheduleable() { Code = code, Color = c.ToHex() };
+                await InternalDatabase.InsertAsync(sc).ConfigureAwait(false);
+                return sc;
             }
+
+            return await InternalDatabase.Table<DatabaseScheduleable>().FirstAsync(x => x.Code == code);
         }
 
         public async Task<Color> GetColorForCodeAsync(string code)
@@ -54,26 +58,38 @@ namespace NSchedule.Helpers
             if (await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() > 0)
             {
                 var s = await InternalDatabase.Table<DatabaseScheduleable>().FirstAsync(x => x.Code == code).ConfigureAwait(false);
-                return Color.FromHex(s.Color);
+                return s.ColorObj;
             }
             else
             {
-                return Color.Default.Random();
+                return Color.Default;
             }
         }
 
-        public async Task RemoveScheduleAsync(string code)
+        public async Task<DatabaseScheduleable> RemoveScheduleAsync(string code)
         {
             if (await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == code).CountAsync() > 0)
             {
+                var remove = await InternalDatabase.Table<DatabaseScheduleable>().FirstAsync(x => x.Code == code);
                 var rem = await InternalDatabase.Table<DatabaseScheduleable>().DeleteAsync(x => x.Code == code).ConfigureAwait(false);
+                return remove;
+            }
+
+            return null;
+        }
+
+        public async Task UpdateScheduleAsync(DatabaseScheduleable s)
+        {
+            if (await InternalDatabase.Table<DatabaseScheduleable>().Where(x => x.Code == s.Code).CountAsync() > 0)
+            {
+                var updates = await InternalDatabase.UpdateAsync(s);
             }
         }
 
-        public async Task<List<string>> GetSchedulesAsync()
+        public async Task<List<DatabaseScheduleable>> GetSchedulesAsync()
         {
-            var list = new List<string>();
-            list.AddRange((await InternalDatabase.Table<DatabaseScheduleable>().Where(x => true).ToListAsync().ConfigureAwait(false)).Select(x => x.Code));
+            var list = new List<DatabaseScheduleable>();
+            list.AddRange(await InternalDatabase.Table<DatabaseScheduleable>().Where(x => true).ToListAsync().ConfigureAwait(false));
             return list;
         }
 

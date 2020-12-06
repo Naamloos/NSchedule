@@ -23,12 +23,22 @@ namespace NSchedule.Helpers
         public ObservableCollection<OrganisationalUnit> OrganisationalUnits { get; private set; } = new ObservableCollection<OrganisationalUnit>();
         public ObservableCollection<Scheduleable> Schedulables { get; private set; } = new ObservableCollection<Scheduleable>();
         public ObservableCollection<Team> Teams { get; private set; } = new ObservableCollection<Team>();
-        public ObservableCollection<Scheduleable> Tracked { get; private set; } = new ObservableCollection<Scheduleable>();
+        public ObservableCollection<DatabaseScheduleable> Tracked { get; private set; } = new ObservableCollection<DatabaseScheduleable>();
 
         public DataHelper(RestHelper rest, Database db)
         {
             this._rest = rest;
             this._db = db;
+        }
+
+        public async Task UpdateTrackedAsync(DatabaseScheduleable s)
+        {
+            this.Tracked.Clear();
+            await this._db.UpdateScheduleAsync(s).ConfigureAwait(false);
+            foreach (var sch in await this._db.GetSchedulesAsync().ConfigureAwait(false))
+            {
+                this.Tracked.Add(sch);
+            }
         }
 
         public async Task PreloadDataAsync()
@@ -67,23 +77,20 @@ namespace NSchedule.Helpers
             // Reloading tracked schedules from DB
             foreach(var sch in await this._db.GetSchedulesAsync().ConfigureAwait(false))
             {
-                if(this.Schedulables.Any(x => x.Code == sch))
-                {
-                    this.Tracked.Add(this.Schedulables.First(x => x.Code == sch));
-                }
+                this.Tracked.Add(sch);
             }
         }
 
         public async Task AddTrackedSchedule(string code)
         {
-            await this._db.AddScheduleAsync(code).ConfigureAwait(false);
-            this.Tracked.Add(this.Schedulables.First(x => x.Code == code));
+            var sc = await this._db.AddScheduleAsync(code).ConfigureAwait(false);
+            this.Tracked.Add(sc);
         }
 
         public async Task RemoveTrackedSchedule(string code)
         {
-            await this._db.RemoveScheduleAsync(code).ConfigureAwait(false);
-            this.Tracked.Remove(this.Schedulables.First(x => x.Code == code));
+            var sc = await this._db.RemoveScheduleAsync(code).ConfigureAwait(false);
+            this.Tracked.Remove(sc);
         }
     }
 }

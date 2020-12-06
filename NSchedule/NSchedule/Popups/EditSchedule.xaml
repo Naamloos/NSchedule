@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage 
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
+    xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
+    x:Class="NSchedule.Popups.EditSchedule"
+    Padding="35,50">
+
+    <!--You can set an animation in the xaml file or in the csharp code behind-->
+    <pages:PopupPage.Animation>
+        <animations:ScaleAnimation 
+            PositionIn="Center"
+            PositionOut="Center"
+            ScaleIn="1.2"
+            ScaleOut="0.8"
+            DurationIn="400"
+            DurationOut="300"
+            EasingIn="SinOut"
+            EasingOut="SinIn"
+            HasBackgroundAnimation="True"/>
+    </pages:PopupPage.Animation>
+    <!--You can use any elements here which are extended from Xamarin.Forms.View-->
+
+    <StackLayout 
+        VerticalOptions="Center" 
+        HorizontalOptions="Center" 
+        Padding="20, 20, 20, 20">
+        <Label Text="{Binding Title}" />
+        <Label Text="Set custom display name (empty to remove)" />
+        <Entry Placeholder="Custom Name..." Text="{Binding CustomName}" />
+        <Label Text="Set custom color..." />
+
+        <colorpicker:ColorWheel 
+            x:Name="ColorWheel"
+            ShowAlphaSlider="False"
+            ShowLuminositySlider="False"
+            ShowLuminosityWheel="True"
+            IsVisible="True"
+            SelectedColor="{Binding Color}"
+            Padding="5"/>
+
+        <Button Text="Save" Command="{Binding Save}" />
+    </StackLayout>
+
+</pages:PopupPage>

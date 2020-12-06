@@ -15,7 +15,7 @@ namespace NSchedule.ViewModels
 {
     public class CompareViewModel : BaseViewModel
     {
-        public ObservableCollection<Scheduleable> Schedules { get { return this.Data.Tracked; } set { } }
+        public ObservableCollection<DatabaseScheduleable> Schedules { get { return this.Data.Tracked; } set { } }
         public Command Compare { get; }
 
         public CompareViewModel()

@@ -16,8 +16,6 @@ namespace NSchedule.Entities
         [JsonProperty("code")]
         public string Code { get; set; }
 
-        public bool Selected { get; set; } = false;
-
         public override string ToString()
         {
             return this.Code;

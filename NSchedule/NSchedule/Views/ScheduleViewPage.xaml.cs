@@ -14,12 +14,12 @@ namespace NSchedule.Views
 {
     public partial class ScheduleViewPage : ContentPage
     {
-        Scheduleable[] s;
+        DatabaseScheduleable[] s;
         int initday;
         int initmonth;
         int inityear;
 
-        public ScheduleViewPage(int day, int month, int year, params Scheduleable[] s)
+        public ScheduleViewPage(int day, int month, int year, params DatabaseScheduleable[] s)
         {
             InitializeComponent();
             this.BindingContext = new ScheduleViewViewModel(day, month, year);

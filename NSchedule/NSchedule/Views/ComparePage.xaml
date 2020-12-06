@@ -13,8 +13,9 @@
                         <DataTemplate>
                             <ViewCell>
                                 <StackLayout Orientation="Horizontal">
+                                    <BoxView BackgroundColor="{Binding ColorObj}" WidthRequest="5" VerticalOptions="Fill"/>
                                     <Switch IsToggled="{Binding Selected}" />
-                                    <Label Text="{Binding Code}" VerticalOptions="Center" HorizontalOptions="StartAndExpand"/>
+                                    <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="StartAndExpand"/>
                                 </StackLayout>
                             </ViewCell>
                         </DataTemplate>
