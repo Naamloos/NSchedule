@@ -33,22 +33,22 @@ namespace NSchedule.ViewModels
             var spinner = Shell.Current.GetCurrentPage().FindByName<ActivityIndicator>("spinner");
             spinner.IsRunning = true;
             LoginVisible = false;
-            CrossToastPopUp.Current.ShowToastMessage("Attempting login...");
+            StaticMethods.Toast("Attempting login...");
             if (Username is null || Password is null)
             {
                 Shell.Current.GetCurrentPage().FindByName<Button>("login").IsVisible = true;
                 spinner.IsRunning = false;
                 LoginVisible = true;
-                CrossToastPopUp.Current.ShowToastMessage("Please enter both Username and Password.");
+                StaticMethods.Toast("Please enter both Username and Password.");
                 return;
             }
             // Prefixing with `//` switches to a different navigation stack instead of pushing to the active one
             var auth = await this.Rest.Authenticate(Username, Password);
-            CrossToastPopUp.Current.ShowToastMessage(auth.Message);
+            StaticMethods.Toast(auth.Message);
 
             if (auth.Success)
             {
-                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
+                await StaticMethods.SafeGotoAsync($"//{nameof(AboutPage)}");
                 await this.Data.PreloadDataAsync();
             }
             else

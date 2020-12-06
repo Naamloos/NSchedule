@@ -12,17 +12,23 @@ namespace NSchedule
 {
     public partial class App : Application
     {
+        private Database _db;
+        private DataHelper _data;
+        private AsyncExecutor _asyncexecutor;
+        private RestHelper _rest;
+
         public App(string uri = "")
         {
             InitializeComponent();
 
-            var db = new Database();
-            var rest = new RestHelper(db);
-            var data = new DataHelper(rest, db);
-            DependencyService.RegisterSingleton(new AsyncExecutor());
-            DependencyService.RegisterSingleton(db);
-            DependencyService.RegisterSingleton(rest);
-            DependencyService.RegisterSingleton(data);
+            this._asyncexecutor = new AsyncExecutor();
+            DependencyService.RegisterSingleton(this._asyncexecutor);
+            this._db = new Database();
+            this._rest = new RestHelper(this._db);
+            this._data = new DataHelper(this._rest, this._db);
+            DependencyService.RegisterSingleton(this._db);
+            DependencyService.RegisterSingleton(this._rest);
+            DependencyService.RegisterSingleton(this._data);
 
             MainPage = new AppShell();
             Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
@@ -41,13 +47,14 @@ namespace NSchedule
 
         protected override async void OnStart()
         {
-            CrossToastPopUp.Current.ShowToastMessage("One moment, trying to re-authenticate...");
+            await this._db.InitializeAsync().ConfigureAwait(false);
+            StaticMethods.Toast("One moment, trying to re-authenticate...");
             var reauth = await DependencyService.Get<RestHelper>().CheckAndReconnectSessionAsync().ConfigureAwait(false);
             if (reauth.Success)
             {
-                CrossToastPopUp.Current.ShowToastMessage(reauth.Message);
+                StaticMethods.Toast(reauth.Message);
                 await DependencyService.Get<DataHelper>().PreloadDataAsync().ConfigureAwait(false);
-                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}").ConfigureAwait(false);
+                await StaticMethods.SafeGotoAsync($"//{nameof(AboutPage)}");
                 var data = DependencyService.Get<DataHelper>();
                 if (data.RedirectOnLaunch)
                 {
@@ -58,14 +65,14 @@ namespace NSchedule
                         var nav = Shell.Current.Navigation;
                         await nav.PushAsync(
                             new ScheduleViewPage(data.RedirectDay, data.RedirectMonth, data.RedirectYear,
-                            data.Schedulables.First(x => x.Code == data.RedirectCode))).ConfigureAwait(false);
+                            data.Schedulables.First(x => x.Code == data.RedirectCode)));
                     }
                 }
             }
             else
             {
                 //reauth
-                CrossToastPopUp.Current.ShowToastMessage("Welcome! Please log in.\nEither your session expired, your credentials changed or you haven't logged in yet.");
+                StaticMethods.Toast("Welcome! Please log in.\nEither your session expired, your credentials changed or you haven't logged in yet.");
                 // enable buttons n shit
                 var btn = Shell.Current.GetCurrentPage().FindByName<Button>("login");
                 btn.IsVisible = true;

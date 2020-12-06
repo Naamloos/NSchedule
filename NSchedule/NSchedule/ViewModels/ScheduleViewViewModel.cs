@@ -77,7 +77,7 @@ namespace NSchedule.ViewModels
                     foreach (var o in orgs)
                     {
                         // Find appropriate year object
-                        var year = Data.Years.First(x =>
+                        var year = Data.Years.FirstOrDefault(x =>
                             x.Oru.ToString() == o.Id &&
                             o.Years.Contains(x.Id) &&
                             x.Start < d &&

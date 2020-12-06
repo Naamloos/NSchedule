@@ -32,7 +32,7 @@ namespace NSchedule.ViewModels
         private async Task CompareAsync()
         {
             var today = DateTime.Now;
-            await Shell.Current.GetCurrentPage().Navigation.PushAsync(new ScheduleViewPage(today.Day, today.Month, today.Day, this.Schedules.Where(x => x.Selected).ToArray()));
+            await Shell.Current.GetCurrentPage().Navigation.PushAsync(new ScheduleViewPage(today.Day, today.Month, today.Year, this.Schedules.Where(x => x.Selected).ToArray()));
         }
     }
 }

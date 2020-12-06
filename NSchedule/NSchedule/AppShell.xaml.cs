@@ -19,8 +19,8 @@ namespace NSchedule
         {
             await DependencyService.Get<Database>().DeleteSettingsAsync();
             DependencyService.Get<RestHelper>().Reset();
-            CrossToastPopUp.Current.ShowToastMessage("Logged out and deleted credentials/sessions");
-            await Current.GoToAsync("//LoginPage");
+            StaticMethods.Toast("Logged out and deleted credentials/sessions");
+            await StaticMethods.SafeGotoAsync("//LoginPage");
             var btn = Shell.Current.GetCurrentPage().FindByName<Button>("login");
             btn.IsVisible = true;
             var spinner = Shell.Current.GetCurrentPage().FindByName<ActivityIndicator>("spinner");

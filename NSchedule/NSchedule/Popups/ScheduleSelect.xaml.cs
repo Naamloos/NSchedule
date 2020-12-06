@@ -32,9 +32,9 @@ namespace NSchedule.Popups
 
             this.Schedulables.ItemSelected += async (sender, e) =>
             {
-                CrossToastPopUp.Current.ShowToastMessage($"Added schedule for {((Scheduleable)e.SelectedItem).Code}.");
+                StaticMethods.Toast($"Added schedule for {((Scheduleable)e.SelectedItem).Code}.");
                 await DependencyService.Get<DataHelper>().AddTrackedSchedule(((Scheduleable)e.SelectedItem).Code).ConfigureAwait(false);
-                await Rg.Plugins.Popup.Services.PopupNavigation.Instance.PopAsync().ConfigureAwait(false);
+                await Rg.Plugins.Popup.Services.PopupNavigation.Instance.PopAsync();
             };
         }
 

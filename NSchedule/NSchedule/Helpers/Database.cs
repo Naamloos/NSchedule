@@ -22,10 +22,9 @@ namespace NSchedule.Helpers
 
         public Database()
         {
-            DependencyService.Get<AsyncExecutor>().Execute(InitializeAsync());
         }
 
-        async Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             if (!initialized)
             {

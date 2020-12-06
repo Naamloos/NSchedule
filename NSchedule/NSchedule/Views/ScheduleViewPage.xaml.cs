@@ -14,13 +14,27 @@ namespace NSchedule.Views
 {
     public partial class ScheduleViewPage : ContentPage
     {
+        Scheduleable[] s;
+        int initday;
+        int initmonth;
+        int inityear;
+
         public ScheduleViewPage(int day, int month, int year, params Scheduleable[] s)
         {
             InitializeComponent();
             this.BindingContext = new ScheduleViewViewModel(day, month, year);
+            this.s = s;
+            this.initday = day;
+            this.initmonth = month;
+            this.inityear = year;
+        }
+
+        protected override async void OnAppearing()
+        {
             var binding = (ScheduleViewViewModel)this.BindingContext;
             binding.ForSchedules(s);
-            DependencyService.Get<AsyncExecutor>().Execute(binding.LoadNewDayAsync(new DateTime(year, month, day)));
+            await binding.LoadNewDayAsync(new DateTime(inityear, initmonth, initday));
+            base.OnAppearing();
         }
     }
 }

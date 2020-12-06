@@ -15,11 +15,11 @@ namespace NSchedule.ViewModels
         public AboutViewModel()
         {
             Title = "Welcome";
-            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://github.com/Naamloos/NSchedule").ConfigureAwait(false));
+            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://github.com/Naamloos/NSchedule"));
             ReloadData = new Command(async () =>
             {
                 await this.Data.PreloadDataAsync().ConfigureAwait(false);
-                CrossToastPopUp.Current.ShowToastMessage($"Done refreshing cache.", Plugin.Toast.Abstractions.ToastLength.Long);
+                StaticMethods.Toast($"Done refreshing cache.");
             });
         }
 
