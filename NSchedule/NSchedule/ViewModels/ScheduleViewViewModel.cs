@@ -33,6 +33,7 @@ namespace NSchedule.ViewModels
         }
 
         public Command<DateTime> DayTapped { get; }
+        public Command ShareSchedule { get; }
         public List<DatabaseScheduleable> Scheduleables { get; set; }
         public EventCollection Events { get; set; } = new EventCollection();
 
@@ -51,6 +52,7 @@ namespace NSchedule.ViewModels
             CurrentMonth = month;
             CurrentDay = day;
             this.DayTapped = new Command<DateTime>(async mday => await LoadNewDayAsync(mday));
+            this.ShareSchedule = new Command(async () => await ShareScheduleAsync());
         }
 
         public void ForSchedules(params DatabaseScheduleable[] s)
@@ -60,6 +62,11 @@ namespace NSchedule.ViewModels
                 this.Title = $"Schedule for {s[0]}.";
             else
                 this.Title = $"Comparing {string.Join(", ", s.Select(x => x.Code))}.";
+        }
+
+        private async Task ShareScheduleAsync()
+        {
+            StaticMethods.Toast($"Selected date: {this.Today.ToShortDateString()}. Coming soon.");
         }
 
         public async Task LoadNewDayAsync(DateTime d)

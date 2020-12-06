@@ -88,7 +88,7 @@
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
     </FlyoutItem>
     <FlyoutItem Title="Schedule" Icon="icon_feed.png">
-        <ShellContent Route="RoosterPage" ContentTemplate="{DataTemplate local:RoosterPage}" />
+        <ShellContent Route="ScheduleListPage" ContentTemplate="{DataTemplate local:ScheduleListPage}" />
     </FlyoutItem>
     <FlyoutItem Title="Compare" Icon="icon_feed.png">
         <ShellContent Route="ComparePage" ContentTemplate="{DataTemplate local:ComparePage}" />

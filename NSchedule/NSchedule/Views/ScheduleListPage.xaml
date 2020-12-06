@@ -21,10 +21,10 @@
                                 <Label Text="{Binding DisplayName}" VerticalOptions="Center" HorizontalOptions="StartAndExpand">
                                 </Label>
                                 <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding BindingContext.OpenSchedule, Source={x:Reference Name=ViewRoosterPage}}}"
+                                    <TapGestureRecognizer Command="{Binding BindingContext.OpenSchedule, Source={x:Reference Name=ViewScheduleListPage}}}"
                                                       CommandParameter="{Binding Code}"
                                                           NumberOfTapsRequired="1"/>
-                                    <TapGestureRecognizer Command="{Binding BindingContext.EditItem, Source={x:Reference Name=ViewRoosterPage}}}"
+                                    <TapGestureRecognizer Command="{Binding BindingContext.EditItem, Source={x:Reference Name=ViewScheduleListPage}}}"
                                                       CommandParameter="{Binding Code}"
                                                           NumberOfTapsRequired="2"/>
                                 </StackLayout.GestureRecognizers>

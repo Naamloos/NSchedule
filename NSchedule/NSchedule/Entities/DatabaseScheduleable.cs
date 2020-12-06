@@ -40,5 +40,10 @@ namespace NSchedule.Entities
 
         [Ignore]
         public bool Selected { get; set; } = false;
+
+        public override string ToString()
+        {
+            return string.IsNullOrEmpty(CustomName) ? Code : $"{CustomName} ({Code})"; ;
+        }
     }
 }

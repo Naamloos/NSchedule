@@ -42,8 +42,8 @@
     <Compile Update="Views\ScheduleViewPage.xaml.cs">
       <DependentUpon>ScheduleViewPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\RoosterPage.xaml.cs">
-      <DependentUpon>RoosterPage.xaml</DependentUpon>
+    <Compile Update="Views\ScheduleListPage.xaml.cs">
+      <DependentUpon>ScheduleListPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 

@@ -2,11 +2,15 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NSchedule.Views.ScheduleViewPage"
-             xmlns:vm="clr-namespace:NSchedule.ViewModels"
              xmlns:controls="clr-namespace:Xamarin.Plugin.Calendar.Controls;assembly=Xamarin.Plugin.Calendar"
-             Title="{Binding Title}" NavigationPage.HasNavigationBar="True">
+             Title="Schedule" NavigationPage.HasNavigationBar="True">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Share" Command="{Binding ShareSchedule}" />
+    </ContentPage.ToolbarItems>
+    
     <StackLayout>
+        <Label Text="{Binding Title}" HorizontalOptions="Center"/>
         <controls:Calendar
             VerticalOptions="FillAndExpand"
             HorizontalOptions="FillAndExpand"
@@ -17,10 +21,21 @@
             Events="{Binding Events}"
             DaysTitleMaximumLength="ThreeChars"
             EventIndicatorColor="Transparent"
-            ArrowsColor="#000000"
             SwipeToChangeMonthEnabled="True"
             SwipeUpToHideEnabled="True"
-            SelectedDate="{Binding Today}">
+            SelectedDate="{Binding Today}"
+            ArrowsColor="{StaticResource Primary}"
+            DaysTitleColor="White"
+            SelectedDateColor="White"
+            SelectedDayTextColor="White"
+            DeselectedDayTextColor="White"
+            DisabledDayColor="White"
+            EventIndicatorSelectedTextColor="White"
+            EventIndicatorTextColor="White"
+            OtherMonthDayColor="#555"
+            TodayOutlineColor="White"
+            EventIndicatorType="Background"
+            EventIndicatorSelectedColor="{StaticResource Primary}">
             <controls:Calendar.EmptyTemplate>
                 <DataTemplate>
                     <StackLayout>
