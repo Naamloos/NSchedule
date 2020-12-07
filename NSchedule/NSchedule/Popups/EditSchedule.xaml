@@ -27,7 +27,7 @@
         VerticalOptions="Center" 
         HorizontalOptions="Center" 
         Padding="20, 20, 20, 20">
-        <Label Text="{Binding Title}" />
+        <Label Text="{Binding Title}" FontSize="Title"/>
         <Label Text="Set custom display name (empty to remove)" />
         <Entry Placeholder="Custom Name..." Text="{Binding CustomName}" />
         <Label Text="Set custom color..." />

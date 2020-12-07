@@ -8,9 +8,9 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Share" Command="{Binding ShareSchedule}" />
     </ContentPage.ToolbarItems>
-    
+
     <StackLayout>
-        <Label Text="{Binding Title}" HorizontalOptions="Center"/>
+        <Label Text="{Binding Title}" HorizontalOptions="Center" VerticalTextAlignment="Center"/>
         <controls:Calendar
             VerticalOptions="FillAndExpand"
             HorizontalOptions="FillAndExpand"
@@ -53,17 +53,20 @@
                         <StackLayout
                             HorizontalOptions="FillAndExpand"
                             Padding="15,0,0,0">
-                            <StackLayout Orientation="Horizontal">
-                                <Label
-                                    Text="{Binding Name}"
-                                    FontAttributes="Bold"
-                                    FontSize="Medium" />
-                                <Label 
-                                    Text="{Binding Times, StringFormat='({0})'}"
-                                    FontSize="Micro"
-                                    FontAttributes="Italic" />
-                            </StackLayout>
-                            
+                            <Label 
+                                Text="{Binding ScheduledFor}"
+                                FontSize="Micro"
+                                FontAttributes="Italic"
+                                IsVisible="{Binding ShowScheduledFor}"/>
+                            <Label
+                                Text="{Binding Name}"
+                                FontAttributes="Bold"
+                                FontSize="Medium"/>
+                            <Label 
+                                Text="{Binding Times, StringFormat='({0})'}"
+                                FontSize="Micro"
+                                FontAttributes="Bold" 
+                                WidthRequest="75"/>
                             <Label 
                                 Text="{Binding Rooms, StringFormat='Rooms: {0}'}"
                                 FontSize="Micro"

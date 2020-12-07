@@ -124,7 +124,8 @@ namespace NSchedule.ViewModels
                             Progress = prog,
                             Rooms = string.Join(", ", rooms.Select(x => x.Code)),
                             Attendees = string.Join(", ", attendees.Select(x => x.Code)),
-                            Appointment = app
+                            Appointment = app,
+                            ScheduledFor = this.Scheduleables.Count > 1 ? s.Code : ""
                         };
 
                         cevent.InfoCommand = new Command(async () =>

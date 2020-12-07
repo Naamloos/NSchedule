@@ -20,5 +20,7 @@ namespace NSchedule.Entities
         public Appointment Appointment { get; set; }
         public Command InfoCommand { get; set; }
         public string ScheduleableCode { get; set; }
+        public string ScheduledFor { get; set; }
+        public bool ShowScheduledFor { get { return !string.IsNullOrEmpty(ScheduledFor); } }
     }
 }
