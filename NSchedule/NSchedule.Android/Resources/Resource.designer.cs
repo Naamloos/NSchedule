@@ -2608,6 +2608,7 @@ namespace NSchedule.Droid
 			global::ColorPicker.Droid.Resource.Styleable.View_paddingEnd = global::NSchedule.Droid.Resource.Styleable.View_paddingEnd;
 			global::ColorPicker.Droid.Resource.Styleable.View_paddingStart = global::NSchedule.Droid.Resource.Styleable.View_paddingStart;
 			global::ColorPicker.Droid.Resource.Styleable.View_theme = global::NSchedule.Droid.Resource.Styleable.View_theme;
+			global::Plugin.LocalNotifications.Resource.Drawable.plugin_lc_smallicon = global::NSchedule.Droid.Resource.Drawable.plugin_lc_smallicon;
 			global::Rg.Plugins.Popup.Resource.Animation.abc_fade_in = global::NSchedule.Droid.Resource.Animation.abc_fade_in;
 			global::Rg.Plugins.Popup.Resource.Animation.abc_fade_out = global::NSchedule.Droid.Resource.Animation.abc_fade_out;
 			global::Rg.Plugins.Popup.Resource.Animation.abc_grow_fade_in_from_bottom = global::NSchedule.Droid.Resource.Animation.abc_grow_fade_in_from_bottom;
@@ -18063,13 +18064,16 @@ namespace NSchedule.Droid
 			public const int notify_panel_notification_icon_bg = 2131165302;
 			
 			// aapt resource value: 0x7F070077
-			public const int tooltip_frame_dark = 2131165303;
+			public const int plugin_lc_smallicon = 2131165303;
 			
 			// aapt resource value: 0x7F070078
-			public const int tooltip_frame_light = 2131165304;
+			public const int tooltip_frame_dark = 2131165304;
 			
 			// aapt resource value: 0x7F070079
-			public const int xamarin_logo = 2131165305;
+			public const int tooltip_frame_light = 2131165305;
+			
+			// aapt resource value: 0x7F07007A
+			public const int xamarin_logo = 2131165306;
 			
 			static Drawable()
 			{

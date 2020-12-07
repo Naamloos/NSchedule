@@ -31,6 +31,11 @@ namespace NSchedule.ViewModels
 
         private async Task CompareAsync()
         {
+            if(this.Schedules.Count(x => x.Selected) < 2)
+            {
+                StaticMethods.Toast("Select at least 2 schedules!");
+                return;
+            }
             var today = DateTime.Now;
             await Shell.Current.GetCurrentPage().Navigation.PushAsync(new ScheduleViewPage(today.Day, today.Month, today.Year, this.Schedules.Where(x => x.Selected).ToArray()));
         }

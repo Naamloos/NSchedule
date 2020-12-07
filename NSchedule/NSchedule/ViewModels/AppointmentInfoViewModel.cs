@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using Xamarin.Forms;
 using Xamarin.Essentials;
+using System.Threading.Tasks;
+using Plugin.LocalNotifications;
 
 namespace NSchedule.ViewModels
 {
@@ -24,6 +26,8 @@ namespace NSchedule.ViewModels
         public string Groups { get; set; }
 
         public Command ShareMe { get; set; }
+
+        public Command RemindMe { get; set; }
 
         public AppointmentInfoViewModel(CalendarEvent cal)
         {
@@ -45,6 +49,16 @@ namespace NSchedule.ViewModels
             {
                 await new ImageHelper().ShareAppointmentImageAsync(cal);
             });
+            this.RemindMe = new Command(async () => await AddReminderAsync());
+        }
+
+        // TODO: removing reminders, (auto setting reminders, etc?)
+        private async Task AddReminderAsync()
+        {
+            var date = this.Appointment.Start.Subtract(TimeSpan.FromMinutes(15));
+            var id = date.GetHashCode();
+            var newnot = await Database.AddNotificationAsync(id, $"{Appointment.Name} at {Appointment.Rooms} in 15 minutes!", "", date.DateTime);
+            CrossLocalNotifications.Current.Show(newnot.Title, newnot.Text, newnot.Id, newnot.DateTime);
         }
     }
 }

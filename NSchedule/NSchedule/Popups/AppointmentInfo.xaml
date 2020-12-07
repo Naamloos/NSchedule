@@ -40,5 +40,6 @@
         </ScrollView>
         
         <Button Margin="15" Text="Share" Command="{Binding ShareMe}"/>
+        <Button Text="Remind Me" Command="{Binding RemindMe}"/>
     </StackLayout>
 </pages:PopupPage>

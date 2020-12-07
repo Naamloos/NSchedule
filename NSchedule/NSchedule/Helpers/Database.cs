@@ -36,8 +36,24 @@ namespace NSchedule.Helpers
                 {
                     await InternalDatabase.CreateTablesAsync(CreateFlags.None, typeof(DatabaseScheduleable)).ConfigureAwait(false);
                 }
+                if (!InternalDatabase.TableMappings.Any(m => m.MappedType.Name == typeof(DatabaseNotification).Name))
+                {
+                    await InternalDatabase.CreateTablesAsync(CreateFlags.None, typeof(DatabaseNotification)).ConfigureAwait(false);
+                }
                 initialized = true;
             }
+        }
+
+        public async Task<DatabaseNotification> AddNotificationAsync(int id, string title, string description, DateTime when)
+        {
+            var newn = new DatabaseNotification() { Id = id, Title = title, Text = description, DateTime = when };
+            await InternalDatabase.InsertAsync(newn);
+            return newn;
+        }
+
+        public async Task<List<DatabaseNotification>> GetNotificationsAsync()
+        {
+            return await InternalDatabase.Table<DatabaseNotification>().Where(x => true).ToListAsync();
         }
 
         public async Task<DatabaseScheduleable> AddScheduleAsync(string code)

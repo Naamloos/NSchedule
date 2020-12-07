@@ -3,6 +3,7 @@ using NSchedule.Entities;
 using NSchedule.Helpers;
 using NSchedule.ViewModels;
 using NSchedule.Views;
+using Plugin.LocalNotifications;
 using Plugin.Toast;
 using System;
 using System.Linq;
@@ -49,6 +50,15 @@ namespace NSchedule
         protected override async void OnStart()
         {
             await this._db.InitializeAsync().ConfigureAwait(false);
+
+            // Re-enabling notifications to make sure they are sent
+            var notifs = await this._db.GetNotificationsAsync();
+            foreach(var n in notifs)
+            {
+                CrossLocalNotifications.Current.Cancel(n.Id);
+                CrossLocalNotifications.Current.Show(n.Title, n.Text, n.Id, n.DateTime);
+            }
+
             StaticMethods.Toast("One moment, trying to re-authenticate...");
             var reauth = await DependencyService.Get<RestHelper>().CheckAndReconnectSessionAsync().ConfigureAwait(false);
             if (reauth.Success)
