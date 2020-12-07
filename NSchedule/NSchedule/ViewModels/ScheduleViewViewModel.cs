@@ -103,11 +103,11 @@ namespace NSchedule.ViewModels
                     foreach (var app in schedule.Where(x => x.Start.DayOfWeek == d.DayOfWeek))
                     {
                         var totalticks = app.End.Ticks - app.Start.Ticks;
-                        float prog = (((float)app.End.Ticks - DateTime.Now.Ticks) / totalticks);
+                        float prog = (float)(app.End.Ticks - DateTime.Now.Ticks) / totalticks;
 
                         if (prog > 1)
                             prog = 1;
-                        if (prog < 0)
+                        else if (prog < 0)
                             prog = 0;
 
                         prog = 1 - prog;
