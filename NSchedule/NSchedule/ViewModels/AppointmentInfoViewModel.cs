@@ -57,7 +57,9 @@ namespace NSchedule.ViewModels
         {
             var date = this.Appointment.Start.Subtract(TimeSpan.FromMinutes(15));
             var id = date.GetHashCode();
-            var newnot = await Database.AddNotificationAsync(id, $"{Appointment.Name} at {Appointment.Rooms} in 15 minutes!", "", date.DateTime);
+            var newnot = await Database.AddNotificationAsync(id, $"Appointment in 15 minutes!", $"{Appointment.Name} at {Appointment.Rooms}" +
+                $" for {Appointment.ScheduleableCode} in 15 minutes!" +
+                $"\n({Appointment.Times})", date.DateTime);
             CrossLocalNotifications.Current.Show(newnot.Title, newnot.Text, newnot.Id, newnot.DateTime);
         }
     }
