@@ -113,9 +113,10 @@ namespace NSchedule.Helpers
             var auth = await authenticateAsync(surf.samlresponse, surf.relaystate).ConfigureAwait(false);
 
             var settings = await _db.GetSettingsAsync().ConfigureAwait(false);
-            settings.CookieString = generateCookieString();
+            settings.CookieString = await StaticMethods.EncryptText(generateCookieString());
             settings.Email = username;
-            settings.Password = password;
+            settings.Password = await StaticMethods.EncryptText(password);
+            StaticMethods.Toast(settings.Password);
             await _db.SetSettingsAsync(settings).ConfigureAwait(false);
 
             if (auth)
@@ -135,9 +136,10 @@ namespace NSchedule.Helpers
 
             if (!string.IsNullOrEmpty(settings.CookieString))
             {
-                splitCookieString(settings.CookieString);
+                var cookiestring = await StaticMethods.DecryptText(settings.CookieString);
+                splitCookieString(cookiestring);
                 // Do een request om te testen of cookies valid zijn
-                var response = await getAsync(Constants.API_ENDPOINT + $"/year", settings.CookieString).ConfigureAwait(false);
+                var response = await getAsync(Constants.API_ENDPOINT + $"/year", cookiestring).ConfigureAwait(false);
 
                 var forbidden = response.StatusCode == HttpStatusCode.Forbidden;
                 if (!forbidden)
@@ -148,7 +150,7 @@ namespace NSchedule.Helpers
             }
 
             // als invalid koekjes, probeer nog 1x in te loggen met oude auth..
-            var auth = await this.Authenticate(settings.Email, settings.Password).ConfigureAwait(false);
+            var auth = await this.Authenticate(settings.Email, await StaticMethods.DecryptText(settings.Password)).ConfigureAwait(false);
 
             // Re-auth met login OK
             if (auth.Success)

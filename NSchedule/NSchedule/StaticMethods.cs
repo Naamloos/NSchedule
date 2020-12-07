@@ -1,4 +1,5 @@
-﻿using Plugin.Toast;
+﻿using Fernet;
+using Plugin.Toast;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,6 +17,43 @@ namespace NSchedule
                 MainThread.BeginInvokeOnMainThread(() => { CrossToastPopUp.Current.ShowToastMessage(message); });
             else
                 CrossToastPopUp.Current.ShowToastMessage(message);
+        }
+
+        public static async Task<string> EncryptText(string src)
+        {
+            var key = (await GetKey()).UrlSafe64Decode();
+            var src64 = src.ToBase64String();
+            var encoded = SimpleFernet.Encrypt(key, src64.UrlSafe64Decode());
+
+            return encoded;
+        }
+
+        public static async Task<string> DecryptText(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return "";
+            }
+
+            var key = await GetKey();
+            var key64 = key.UrlSafe64Decode();
+            var decoded64 = SimpleFernet.Decrypt(key64, token, out var timestamp);
+            var decoded = decoded64.UrlSafe64Encode().FromBase64String();
+
+            return decoded;
+        }
+
+        private static async Task<string> GetKey()
+        {
+            var key = await SecureStorage.GetAsync("encryption_key");
+            if (key != null && key.Length == 57)
+            {
+                return key;
+            }
+
+            var newkey = SimpleFernet.GenerateKey();
+            await SecureStorage.SetAsync("encryption_key", newkey);
+            return newkey;
         }
 
         public static async Task SafeGotoAsync(string page)
